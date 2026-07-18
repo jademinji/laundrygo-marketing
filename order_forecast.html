@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>오늘 수거신청 마감 예측 · 런드리고</title>
+<style>
+  :root {
+    color-scheme: light;
+    --page: #f2f4f8;
+    --surface-1: #ffffff;
+    --text-primary: #101828;
+    --text-secondary: #52514e;
+    --text-muted: #898781;
+    --grid: #e1e0d9;
+    --baseline: #d5d7de;
+    --border: rgba(11,11,11,0.08);
+    --series-1: #2a78d6;
+    --accent-strong: #1c5cab;
+    --accent-soft: rgba(42,120,214,0.10);
+    --accent-chip: #e3edfb;
+    --good-bg: #e2f5e2;
+    --good-tx: #006300;
+    --warn-bg: #fdf0d4;
+    --warn-tx: #7a5200;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      color-scheme: dark;
+      --page: #0d0d0d;
+      --surface-1: #1a1a19;
+      --text-primary: #ffffff;
+      --text-secondary: #c3c2b7;
+      --text-muted: #898781;
+      --grid: #2c2c2a;
+      --baseline: #383835;
+      --border: rgba(255,255,255,0.10);
+      --series-1: #3987e5;
+      --accent-strong: #6da7ec;
+      --accent-soft: rgba(57,135,229,0.14);
+      --accent-chip: rgba(57,135,229,0.20);
+      --good-bg: rgba(12,163,12,0.18);
+      --good-tx: #4fd44f;
+      --warn-bg: rgba(250,178,25,0.16);
+      --warn-tx: #fab219;
+    }
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: system-ui, -apple-system, "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+    background: var(--page); color: var(--text-primary);
+    padding: 28px 20px 56px; line-height: 1.5;
+  }
+  .wrap { max-width: 1040px; margin: 0 auto; }
+
+  header { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px; margin-bottom: 20px; }
+  .eyebrow { font-size: 12px; font-weight: 700; letter-spacing: 0.14em; color: var(--series-1); text-transform: uppercase; }
+  header h1 { font-size: 30px; font-weight: 800; margin-top: 2px; }
+  .head-right { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+  .date-badge { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; color: var(--text-secondary); }
+  .date-badge::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: #0ca30c; }
+  .mb-link {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 13px; font-weight: 600; text-decoration: none;
+    color: var(--series-1); background: var(--surface-1);
+    border: 1px solid var(--baseline); border-radius: 8px;
+    padding: 7px 13px; white-space: nowrap;
+  }
+  .mb-link:hover { background: var(--accent-soft); }
+
+  .top-grid { display: grid; grid-template-columns: 1fr 1.25fr; gap: 16px; }
+  @media (max-width: 820px) { .top-grid { grid-template-columns: 1fr; } }
+  .card {
+    background: var(--surface-1); border: 1px solid var(--border);
+    border-radius: 16px; padding: 24px;
+  }
+  .card.forecast { border: 2px solid var(--series-1); }
+  .step { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
+  .step .num {
+    width: 24px; height: 24px; border-radius: 50%; background: var(--accent-chip);
+    color: var(--accent-strong); font-size: 13px; font-weight: 700;
+    display: inline-flex; align-items: center; justify-content: center; flex: none;
+  }
+  .step h2 { font-size: 17px; font-weight: 700; }
+  .step .side { margin-left: auto; font-size: 12px; color: var(--text-muted); }
+
+  .field { margin-top: 16px; }
+  .field label { display: block; font-size: 13px; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px; }
+  .count-wrap { position: relative; }
+  .count-wrap .unit { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 15px; }
+  input[type="number"] {
+    width: 100%; font: inherit; font-size: 26px; font-weight: 700;
+    color: var(--text-primary); background: var(--surface-1);
+    border: 1.5px solid var(--series-1); border-radius: 10px;
+    padding: 12px 44px 12px 16px;
+  }
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  input[type="date"], select {
+    width: 100%; font: inherit; font-size: 15px; color: var(--text-primary);
+    background: var(--surface-1); border: 1px solid var(--baseline);
+    border-radius: 10px; padding: 10px 12px;
+  }
+  input:focus, select:focus { outline: 2px solid var(--series-1); outline-offset: 1px; }
+  .go-btn {
+    width: 100%; margin-top: 18px; font: inherit; font-size: 16px; font-weight: 700;
+    color: #fff; background: linear-gradient(90deg, #2a78d6, #1c5cab);
+    border: none; border-radius: 10px; padding: 14px; cursor: pointer;
+  }
+  .go-btn:hover { filter: brightness(1.06); }
+  .hint { font-size: 12px; color: var(--text-muted); margin-top: 12px; }
+
+  .conf { margin-left: auto; font-size: 12px; font-weight: 700; padding: 5px 11px; border-radius: 999px; }
+  .conf.high { background: var(--good-bg); color: var(--good-tx); }
+  .conf.mid { background: var(--warn-bg); color: var(--warn-tx); }
+  .hero { font-size: 58px; font-weight: 800; line-height: 1.1; margin-top: 10px; }
+  .hero .unit { font-size: 22px; font-weight: 600; color: var(--text-secondary); margin-left: 4px; }
+  .range-line { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 10px; padding-bottom: 16px; border-bottom: 1px solid var(--grid); }
+  .range-line .lab { font-size: 13px; font-weight: 600; color: var(--text-secondary); }
+  .range-chip { background: var(--accent-chip); color: var(--accent-strong); font-size: 16px; font-weight: 700; padding: 4px 12px; border-radius: 8px; }
+  .range-line .note { font-size: 12px; color: var(--text-muted); }
+  .mini-stats { display: grid; grid-template-columns: 1fr 1fr 1fr; margin-top: 16px; }
+  .mini-stats > div { text-align: center; }
+  .mini-stats > div + div { border-left: 1px solid var(--grid); }
+  .mini-stats .k { font-size: 12px; color: var(--text-secondary); font-weight: 600; }
+  .mini-stats .v { font-size: 26px; font-weight: 750; margin-top: 2px; }
+  .mini-stats .v small { font-size: 14px; font-weight: 600; color: var(--text-secondary); }
+  .placeholder { color: var(--text-muted); font-size: 14px; margin-top: 14px; }
+
+  .tile-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-top: 16px; }
+  @media (max-width: 820px) { .tile-grid { grid-template-columns: 1fr; } }
+  .tile { background: var(--surface-1); border: 1px solid var(--border); border-radius: 16px; padding: 20px 22px; display: flex; gap: 16px; align-items: center; }
+  .tile .ico {
+    width: 46px; height: 46px; border-radius: 50%; background: var(--accent-chip);
+    color: var(--accent-strong); flex: none;
+    display: inline-flex; align-items: center; justify-content: center; font-size: 20px;
+  }
+  .tile .k { font-size: 13px; font-weight: 600; color: var(--text-secondary); }
+  .tile .v { font-size: 26px; font-weight: 750; }
+  .tile .v small { font-size: 14px; font-weight: 600; color: var(--text-secondary); }
+  .tile .s { font-size: 12px; color: var(--text-muted); }
+
+  .chart-head { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 8px; }
+  .chart-head h2, .table-head h2 { font-size: 16px; font-weight: 700; }
+  .legend { display: flex; gap: 16px; font-size: 12px; color: var(--text-secondary); align-items: center; }
+  .legend .li { display: inline-flex; align-items: center; gap: 6px; }
+  .lg-line { width: 18px; height: 0; border-top: 3px solid var(--series-1); border-radius: 2px; }
+  .lg-band { width: 14px; height: 12px; background: var(--series-1); opacity: 0.16; border-radius: 3px; }
+  .lg-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--series-1); border: 2px solid var(--surface-1); box-shadow: 0 0 0 1px var(--baseline); }
+  #chart { width: 100%; height: auto; display: block; margin-top: 8px; }
+  .tooltip {
+    position: fixed; pointer-events: none; z-index: 10;
+    background: var(--surface-1); border: 1px solid var(--border);
+    border-radius: 8px; padding: 8px 12px; font-size: 12px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.12);
+    display: none; min-width: 130px;
+  }
+  .tooltip .t-time { color: var(--text-muted); }
+  .tooltip .t-val { font-size: 15px; font-weight: 700; }
+  .tooltip .t-key { display: inline-block; width: 12px; height: 0; border-top: 3px solid var(--series-1); vertical-align: middle; margin-right: 6px; border-radius: 2px; }
+
+  .table-head { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
+  .toggle { display: flex; border: 1px solid var(--baseline); border-radius: 8px; overflow: hidden; }
+  .toggle button { font: inherit; font-size: 12px; font-weight: 600; padding: 6px 12px; background: var(--surface-1); color: var(--text-secondary); border: none; cursor: pointer; }
+  .toggle button.on { background: var(--series-1); color: #fff; }
+  .table-scroll { overflow-x: auto; margin-top: 12px; }
+  table { border-collapse: collapse; width: 100%; font-size: 13px; }
+  th, td { padding: 7px 10px; text-align: right; font-variant-numeric: tabular-nums; }
+  th { color: var(--text-secondary); font-weight: 600; border-bottom: 1px solid var(--baseline); }
+  td:first-child, th:first-child { text-align: left; color: var(--text-secondary); white-space: nowrap; }
+  tbody tr { border-bottom: 1px solid var(--grid); }
+  td.sel { background: var(--accent-soft); font-weight: 700; color: var(--text-primary); border-radius: 4px; }
+  .foot { font-size: 12px; color: var(--text-muted); margin-top: 16px; }
+  .foot li { margin-left: 18px; margin-top: 2px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <div class="eyebrow">Collection Forecast</div>
+      <h1>오늘 수거신청 마감 예측</h1>
+      <p style="font-size:12px;color:var(--text-muted);margin-top:4px;" id="data-basis"></p>
+    </div>
+    <div class="head-right">
+      <span class="date-badge" id="today-badge"></span>
+      <a class="mb-link" href="https://metabase-v2.laundrygo.com/question/3292?startDate=&amp;endDate=" target="_blank" rel="noopener">현재 주문수 확인 (메타베이스) ↗</a>
+    </div>
+  </header>
+
+  <div class="top-grid">
+    <div class="card">
+      <div class="step"><span class="num">1</span><h2>현재 현황 입력</h2><span class="side">집계 시점의 누적 신청수를 입력하세요</span></div>
+      <div class="field">
+        <label for="count">현재 누적 수거신청수</label>
+        <div class="count-wrap">
+          <input type="number" id="count" min="0" step="1" placeholder="예: 1356" inputmode="numeric">
+          <span class="unit">건</span>
+        </div>
+      </div>
+      <div class="field row2">
+        <div>
+          <label for="date">기준 날짜 (자동)</label>
+          <input type="date" id="date">
+        </div>
+        <div>
+          <label for="hour">집계 시각</label>
+          <select id="hour"></select>
+        </div>
+      </div>
+      <button class="go-btn" id="go">마감 예측하기 →</button>
+      <p class="hint">집계 시각은 <strong>정각 시점의 누적치</strong>예요. 예: “18시 기준” = 18:00에 확인한 누적 신청수(17시대까지 반영). 수거일은 전날 22시 ~ 당일 21시(21:59) 마감 기준입니다.</p>
+    </div>
+
+    <div class="card forecast">
+      <div class="step"><span class="num">2</span><h2>예상 마감</h2><span class="conf" id="conf" hidden></span></div>
+      <div id="fc-body" hidden>
+        <div class="hero"><span id="r-pred">–</span><span class="unit">건</span></div>
+        <div class="range-line">
+          <span class="lab">예상 범위</span>
+          <span class="range-chip" id="r-range">–</span>
+          <span class="note">과거 80% 구간</span>
+        </div>
+        <div class="mini-stats">
+          <div><div class="k">과거 동일 요일</div><div class="v" id="m-n">–<small>일</small></div></div>
+          <div><div class="k" id="m-share-k">누적 비중</div><div class="v" id="m-share">–<small>%</small></div></div>
+          <div><div class="k">과거 중앙 오차</div><div class="v" id="m-err">–<small>%</small></div></div>
+        </div>
+      </div>
+      <p class="placeholder" id="fc-empty">누적 신청수를 입력하고 ‘마감 예측하기’를 누르면 예상 마감치와 범위가 표시됩니다.</p>
+    </div>
+  </div>
+
+  <div class="tile-grid">
+    <div class="tile">
+      <span class="ico">▦</span>
+      <div><div class="k">동일 요일 평균 마감</div><div class="v" id="t-avg">–<small>건</small></div><div class="s" id="t-avg-s"></div></div>
+    </div>
+    <div class="tile">
+      <span class="ico">↩</span>
+      <div><div class="k">전주 동요일 마감</div><div class="v" id="t-lw">–<small>건</small></div><div class="s" id="t-lw-s"></div></div>
+    </div>
+    <div class="tile">
+      <span class="ico">◔</span>
+      <div><div class="k">남은 예상 신청</div><div class="v" id="t-left">–<small>건</small></div><div class="s">마감까지 추가 예상</div></div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:16px;">
+    <div class="chart-head">
+      <h2>시간대별 예상 누적 경로</h2>
+      <div class="legend">
+        <span class="li"><span class="lg-line"></span>예상 경로</span>
+        <span class="li"><span class="lg-band"></span>예상 범위</span>
+        <span class="li"><span class="lg-dot"></span>현재 입력</span>
+      </div>
+    </div>
+    <p style="font-size:12px;color:var(--text-muted);" id="chart-meta"></p>
+    <svg id="chart" viewBox="0 0 980 320" role="img" aria-label="시간대별 예상 누적 수거신청수 곡선"></svg>
+  </div>
+
+  <div class="card" style="margin-top:16px;">
+    <div class="table-head">
+      <h2>요일 × 시각별 마감 배율 (평균)</h2>
+      <div class="toggle">
+        <button id="tg-main" class="on">주요 시간대 (15~21시)</button>
+        <button id="tg-all">전체 시간대</button>
+      </div>
+    </div>
+    <div class="table-scroll"><table id="ratio-table"></table></div>
+  </div>
+
+  <ul class="foot" id="foot"></ul>
+</div>
+
+<div class="tooltip" id="tooltip"></div>
+
+<script>
+const DATA = {"stats": {"0": {"23": {"mean": 19.2345, "median": 18.7278, "p10": 15.3481, "p90": 21.5438, "medape": 0.1005, "n": 27}, "0": {"mean": 12.0795, "median": 11.5739, "p10": 9.7198, "p90": 13.7499, "medape": 0.0981, "n": 27}, "1": {"mean": 10.0106, "median": 9.7537, "p10": 8.2711, "p90": 10.989, "medape": 0.0852, "n": 27}, "2": {"mean": 9.1849, "median": 8.9079, "p10": 7.6059, "p90": 9.9201, "medape": 0.0754, "n": 27}, "3": {"mean": 8.7807, "median": 8.4716, "p10": 7.2824, "p90": 9.3616, "medape": 0.0628, "n": 27}, "4": {"mean": 8.555, "median": 8.3005, "p10": 7.1699, "p90": 9.0793, "medape": 0.0662, "n": 27}, "5": {"mean": 8.3867, "median": 8.197, "p10": 7.0513, "p90": 8.8832, "medape": 0.0685, "n": 27}, "6": {"mean": 8.1231, "median": 8.012, "p10": 6.8683, "p90": 8.6335, "medape": 0.0642, "n": 27}, "7": {"mean": 7.5571, "median": 7.2678, "p10": 6.4272, "p90": 8.0439, "medape": 0.0727, "n": 27}, "8": {"mean": 6.4898, "median": 6.0967, "p10": 5.5283, "p90": 6.9587, "medape": 0.0743, "n": 27}, "9": {"mean": 5.5522, "median": 5.2163, "p10": 4.7758, "p90": 5.9, "medape": 0.0831, "n": 27}, "10": {"mean": 4.82, "median": 4.5862, "p10": 4.1828, "p90": 5.0864, "medape": 0.0617, "n": 27}, "11": {"mean": 4.2612, "median": 4.1909, "p10": 3.7341, "p90": 4.5161, "medape": 0.057, "n": 27}, "12": {"mean": 3.8345, "median": 3.8113, "p10": 3.4438, "p90": 4.0908, "medape": 0.055, "n": 27}, "13": {"mean": 3.4645, "median": 3.459, "p10": 3.1936, "p90": 3.7098, "medape": 0.0535, "n": 27}, "14": {"mean": 3.1451, "median": 3.1479, "p10": 2.9288, "p90": 3.3796, "medape": 0.0442, "n": 27}, "15": {"mean": 2.8805, "median": 2.8953, "p10": 2.7085, "p90": 3.0335, "medape": 0.0329, "n": 27}, "16": {"mean": 2.6405, "median": 2.6563, "p10": 2.4987, "p90": 2.7573, "medape": 0.0388, "n": 27}, "17": {"mean": 2.4119, "median": 2.4259, "p10": 2.2679, "p90": 2.5353, "medape": 0.0331, "n": 27}, "18": {"mean": 2.1582, "median": 2.1722, "p10": 2.0235, "p90": 2.2727, "medape": 0.0321, "n": 27}, "19": {"mean": 1.842, "median": 1.8476, "p10": 1.7477, "p90": 1.9305, "medape": 0.0233, "n": 27}, "20": {"mean": 1.5214, "median": 1.5182, "p10": 1.4837, "p90": 1.5888, "medape": 0.0118, "n": 27}, "21": {"mean": 1.2381, "median": 1.2375, "p10": 1.2128, "p90": 1.2751, "medape": 0.0079, "n": 27}}, "1": {"23": {"mean": 20.8997, "median": 20.9123, "p10": 17.9568, "p90": 22.9825, "medape": 0.0503, "n": 27}, "0": {"mean": 13.1179, "median": 12.7554, "p10": 11.0804, "p90": 14.1391, "medape": 0.0389, "n": 27}, "1": {"mean": 10.7443, "median": 10.4366, "p10": 9.6759, "p90": 11.1215, "medape": 0.0425, "n": 27}, "2": {"mean": 9.8916, "median": 9.5634, "p10": 8.9684, "p90": 10.3172, "medape": 0.0447, "n": 27}, "3": {"mean": 9.4661, "median": 9.2894, "p10": 8.4471, "p90": 9.8724, "medape": 0.0378, "n": 27}, "4": {"mean": 9.1943, "median": 8.9373, "p10": 8.2509, "p90": 9.6323, "medape": 0.0367, "n": 27}, "5": {"mean": 8.9978, "median": 8.7793, "p10": 8.0487, "p90": 9.3968, "medape": 0.0358, "n": 27}, "6": {"mean": 8.7071, "median": 8.5, "p10": 7.79, "p90": 9.1013, "medape": 0.0325, "n": 27}, "7": {"mean": 8.0897, "median": 7.879, "p10": 7.1654, "p90": 8.4133, "medape": 0.0346, "n": 27}, "8": {"mean": 6.8968, "median": 6.8162, "p10": 5.9526, "p90": 7.2268, "medape": 0.0378, "n": 27}, "9": {"mean": 5.783, "median": 5.6469, "p10": 5.0906, "p90": 6.0401, "medape": 0.0352, "n": 27}, "10": {"mean": 5.0189, "median": 4.9335, "p10": 4.4346, "p90": 5.2813, "medape": 0.0495, "n": 27}, "11": {"mean": 4.4462, "median": 4.387, "p10": 3.9653, "p90": 4.6448, "medape": 0.0365, "n": 27}, "12": {"mean": 4.0068, "median": 3.956, "p10": 3.6092, "p90": 4.2241, "medape": 0.0363, "n": 27}, "13": {"mean": 3.6324, "median": 3.6046, "p10": 3.3174, "p90": 3.8245, "medape": 0.0318, "n": 27}, "14": {"mean": 3.3069, "median": 3.2448, "p10": 3.0359, "p90": 3.5159, "medape": 0.0283, "n": 27}, "15": {"mean": 3.0301, "median": 3.0036, "p10": 2.8332, "p90": 3.1981, "medape": 0.0264, "n": 27}, "16": {"mean": 2.7857, "median": 2.7734, "p10": 2.6239, "p90": 2.9019, "medape": 0.0268, "n": 27}, "17": {"mean": 2.5402, "median": 2.5157, "p10": 2.4168, "p90": 2.6387, "medape": 0.0174, "n": 27}, "18": {"mean": 2.2545, "median": 2.25, "p10": 2.0789, "p90": 2.3214, "medape": 0.0142, "n": 27}, "19": {"mean": 1.9109, "median": 1.9019, "p10": 1.8032, "p90": 1.9698, "medape": 0.0226, "n": 27}, "20": {"mean": 1.5782, "median": 1.5565, "p10": 1.5169, "p90": 1.6278, "medape": 0.0223, "n": 27}, "21": {"mean": 1.261, "median": 1.2606, "p10": 1.2367, "p90": 1.2823, "medape": 0.0064, "n": 27}}, "2": {"23": {"mean": 20.4553, "median": 20.8455, "p10": 17.0833, "p90": 23.5548, "medape": 0.1026, "n": 27}, "0": {"mean": 12.617, "median": 12.5815, "p10": 10.8428, "p90": 14.0501, "medape": 0.0674, "n": 27}, "1": {"mean": 10.4344, "median": 10.3249, "p10": 9.3511, "p90": 11.4928, "medape": 0.0603, "n": 27}, "2": {"mean": 9.5874, "median": 9.4643, "p10": 8.5201, "p90": 10.5706, "medape": 0.0481, "n": 27}, "3": {"mean": 9.1362, "median": 8.9307, "p10": 8.1174, "p90": 10.0502, "medape": 0.048, "n": 27}, "4": {"mean": 8.8675, "median": 8.7706, "p10": 7.8179, "p90": 9.674, "medape": 0.0626, "n": 27}, "5": {"mean": 8.65, "median": 8.4983, "p10": 7.6494, "p90": 9.4898, "medape": 0.0498, "n": 27}, "6": {"mean": 8.3694, "median": 8.2295, "p10": 7.4746, "p90": 9.1482, "medape": 0.0461, "n": 27}, "7": {"mean": 7.7733, "median": 7.5566, "p10": 7.0464, "p90": 8.4301, "medape": 0.0611, "n": 27}, "8": {"mean": 6.5985, "median": 6.4634, "p10": 5.9305, "p90": 7.1808, "medape": 0.0731, "n": 27}, "9": {"mean": 5.5425, "median": 5.4026, "p10": 4.9766, "p90": 5.9958, "medape": 0.0612, "n": 27}, "10": {"mean": 4.7723, "median": 4.7247, "p10": 4.3235, "p90": 5.1203, "medape": 0.0531, "n": 27}, "11": {"mean": 4.2425, "median": 4.2068, "p10": 3.8974, "p90": 4.5026, "medape": 0.0471, "n": 27}, "12": {"mean": 3.8289, "median": 3.8203, "p10": 3.5721, "p90": 4.0832, "medape": 0.0518, "n": 27}, "13": {"mean": 3.4882, "median": 3.4857, "p10": 3.2895, "p90": 3.7275, "medape": 0.0407, "n": 27}, "14": {"mean": 3.1743, "median": 3.188, "p10": 3.0194, "p90": 3.3539, "medape": 0.0356, "n": 27}, "15": {"mean": 2.9127, "median": 2.9152, "p10": 2.7722, "p90": 3.0825, "medape": 0.0345, "n": 27}, "16": {"mean": 2.6797, "median": 2.6815, "p10": 2.5579, "p90": 2.8171, "medape": 0.0273, "n": 27}, "17": {"mean": 2.4254, "median": 2.4424, "p10": 2.3394, "p90": 2.5467, "medape": 0.027, "n": 27}, "18": {"mean": 2.1686, "median": 2.1868, "p10": 2.1114, "p90": 2.281, "medape": 0.023, "n": 27}, "19": {"mean": 1.8495, "median": 1.8634, "p10": 1.8138, "p90": 1.9171, "medape": 0.0185, "n": 27}, "20": {"mean": 1.5326, "median": 1.5459, "p10": 1.4996, "p90": 1.5819, "medape": 0.0151, "n": 27}, "21": {"mean": 1.2463, "median": 1.2473, "p10": 1.2248, "p90": 1.2718, "medape": 0.0097, "n": 27}}, "3": {"23": {"mean": 21.8696, "median": 21.3688, "p10": 18.5385, "p90": 26.5922, "medape": 0.0924, "n": 28}, "0": {"mean": 13.5725, "median": 13.2132, "p10": 11.8624, "p90": 15.7497, "medape": 0.066, "n": 28}, "1": {"mean": 11.2426, "median": 11.0232, "p10": 9.7146, "p90": 12.9255, "medape": 0.0758, "n": 28}, "2": {"mean": 10.3096, "median": 10.0132, "p10": 8.9678, "p90": 11.5802, "medape": 0.0683, "n": 28}, "3": {"mean": 9.7985, "median": 9.523, "p10": 8.5147, "p90": 11.1508, "medape": 0.07, "n": 28}, "4": {"mean": 9.4939, "median": 9.2687, "p10": 8.3133, "p90": 10.8515, "medape": 0.0608, "n": 28}, "5": {"mean": 9.2762, "median": 9.1319, "p10": 8.1005, "p90": 10.5196, "medape": 0.0609, "n": 28}, "6": {"mean": 8.9878, "median": 8.8807, "p10": 7.8765, "p90": 9.9766, "medape": 0.0599, "n": 28}, "7": {"mean": 8.3193, "median": 8.1456, "p10": 7.382, "p90": 9.1854, "medape": 0.057, "n": 28}, "8": {"mean": 7.063, "median": 6.7863, "p10": 6.3764, "p90": 8.0297, "medape": 0.0701, "n": 28}, "9": {"mean": 5.9334, "median": 5.6861, "p10": 5.4029, "p90": 6.7354, "medape": 0.0599, "n": 28}, "10": {"mean": 5.1281, "median": 4.9074, "p10": 4.6463, "p90": 5.9238, "medape": 0.0602, "n": 28}, "11": {"mean": 4.55, "median": 4.3729, "p10": 4.1918, "p90": 5.3654, "medape": 0.0637, "n": 28}, "12": {"mean": 4.1052, "median": 4.0026, "p10": 3.7959, "p90": 4.8103, "medape": 0.0583, "n": 28}, "13": {"mean": 3.7251, "median": 3.6329, "p10": 3.4223, "p90": 4.1356, "medape": 0.0474, "n": 28}, "14": {"mean": 3.3501, "median": 3.2893, "p10": 3.0547, "p90": 3.5335, "medape": 0.0386, "n": 28}, "15": {"mean": 3.059, "median": 3.0006, "p10": 2.8245, "p90": 3.229, "medape": 0.037, "n": 28}, "16": {"mean": 2.8119, "median": 2.7735, "p10": 2.573, "p90": 2.9432, "medape": 0.0371, "n": 28}, "17": {"mean": 2.5605, "median": 2.5376, "p10": 2.3789, "p90": 2.6809, "medape": 0.0351, "n": 28}, "18": {"mean": 2.2773, "median": 2.2535, "p10": 2.1319, "p90": 2.4056, "medape": 0.031, "n": 28}, "19": {"mean": 1.9, "median": 1.8888, "p10": 1.7916, "p90": 1.9713, "medape": 0.0214, "n": 28}, "20": {"mean": 1.5644, "median": 1.559, "p10": 1.4847, "p90": 1.613, "medape": 0.0149, "n": 28}, "21": {"mean": 1.2542, "median": 1.2517, "p10": 1.2307, "p90": 1.277, "medape": 0.0109, "n": 28}}, "4": {"23": {"mean": 26.3333, "median": 26.1521, "p10": 22.6974, "p90": 30.9245, "medape": 0.1087, "n": 28}, "0": {"mean": 16.2183, "median": 16.3546, "p10": 13.6175, "p90": 18.9287, "medape": 0.0973, "n": 28}, "1": {"mean": 13.145, "median": 13.3846, "p10": 11.3126, "p90": 14.606, "medape": 0.0772, "n": 28}, "2": {"mean": 11.9693, "median": 11.9531, "p10": 10.5161, "p90": 13.2671, "medape": 0.0649, "n": 28}, "3": {"mean": 11.3534, "median": 11.3557, "p10": 10.0669, "p90": 12.663, "medape": 0.0633, "n": 28}, "4": {"mean": 11.0032, "median": 10.9082, "p10": 9.7695, "p90": 12.2295, "medape": 0.0569, "n": 28}, "5": {"mean": 10.7545, "median": 10.6212, "p10": 9.5663, "p90": 11.8722, "medape": 0.0599, "n": 28}, "6": {"mean": 10.3915, "median": 10.3123, "p10": 9.2234, "p90": 11.3657, "medape": 0.06, "n": 28}, "7": {"mean": 9.4992, "median": 9.4555, "p10": 8.5427, "p90": 10.454, "medape": 0.0586, "n": 28}, "8": {"mean": 7.9394, "median": 7.8684, "p10": 7.2645, "p90": 8.9623, "medape": 0.0608, "n": 28}, "9": {"mean": 6.5572, "median": 6.4511, "p10": 6.0686, "p90": 7.2745, "medape": 0.0545, "n": 28}, "10": {"mean": 5.6272, "median": 5.5517, "p10": 5.2302, "p90": 6.2558, "medape": 0.0335, "n": 28}, "11": {"mean": 4.9369, "median": 4.8683, "p10": 4.6009, "p90": 5.4518, "medape": 0.0406, "n": 28}, "12": {"mean": 4.4222, "median": 4.417, "p10": 4.1447, "p90": 4.881, "medape": 0.0383, "n": 28}, "13": {"mean": 4.007, "median": 4.0101, "p10": 3.7719, "p90": 4.3878, "medape": 0.041, "n": 28}, "14": {"mean": 3.6161, "median": 3.609, "p10": 3.3795, "p90": 3.9209, "medape": 0.035, "n": 28}, "15": {"mean": 3.2868, "median": 3.2903, "p10": 3.0763, "p90": 3.5691, "medape": 0.0413, "n": 28}, "16": {"mean": 2.9939, "median": 3.012, "p10": 2.8068, "p90": 3.2226, "medape": 0.0372, "n": 28}, "17": {"mean": 2.6959, "median": 2.7056, "p10": 2.5425, "p90": 2.9004, "medape": 0.0408, "n": 28}, "18": {"mean": 2.3581, "median": 2.3671, "p10": 2.2397, "p90": 2.4939, "medape": 0.0384, "n": 28}, "19": {"mean": 1.9277, "median": 1.9616, "p10": 1.8287, "p90": 2.0129, "medape": 0.0273, "n": 28}, "20": {"mean": 1.5524, "median": 1.567, "p10": 1.4836, "p90": 1.6009, "medape": 0.0203, "n": 28}, "21": {"mean": 1.2468, "median": 1.2495, "p10": 1.223, "p90": 1.2736, "medape": 0.0128, "n": 28}}, "5": {"23": {"mean": 29.3608, "median": 29.3491, "p10": 25.1791, "p90": 33.8739, "medape": 0.0695, "n": 28}, "0": {"mean": 18.1783, "median": 17.9527, "p10": 16.5307, "p90": 20.9301, "medape": 0.0691, "n": 28}, "1": {"mean": 14.7037, "median": 14.3706, "p10": 13.2527, "p90": 17.0186, "medape": 0.0478, "n": 28}, "2": {"mean": 13.3095, "median": 13.0832, "p10": 11.8111, "p90": 15.2212, "medape": 0.0486, "n": 28}, "3": {"mean": 12.5312, "median": 12.4303, "p10": 11.1681, "p90": 14.3867, "medape": 0.0502, "n": 28}, "4": {"mean": 12.1278, "median": 11.9742, "p10": 10.9102, "p90": 13.8359, "medape": 0.0518, "n": 28}, "5": {"mean": 11.7942, "median": 11.7729, "p10": 10.4912, "p90": 13.3371, "medape": 0.0531, "n": 28}, "6": {"mean": 11.3816, "median": 11.3368, "p10": 10.0738, "p90": 13.0276, "medape": 0.0513, "n": 28}, "7": {"mean": 10.7948, "median": 10.8544, "p10": 9.3964, "p90": 12.2893, "medape": 0.0425, "n": 28}, "8": {"mean": 9.5689, "median": 9.5218, "p10": 8.3873, "p90": 11.105, "medape": 0.0506, "n": 28}, "9": {"mean": 7.9598, "median": 7.9351, "p10": 7.1952, "p90": 8.9354, "medape": 0.0555, "n": 28}, "10": {"mean": 6.3459, "median": 6.364, "p10": 5.7517, "p90": 7.0281, "medape": 0.0519, "n": 28}, "11": {"mean": 5.0958, "median": 5.0963, "p10": 4.6878, "p90": 5.4873, "medape": 0.0373, "n": 28}, "12": {"mean": 4.1621, "median": 4.1659, "p10": 3.8985, "p90": 4.4497, "medape": 0.0349, "n": 28}, "13": {"mean": 3.5524, "median": 3.5532, "p10": 3.3976, "p90": 3.766, "medape": 0.0315, "n": 28}, "14": {"mean": 3.064, "median": 3.0679, "p10": 2.9471, "p90": 3.2316, "medape": 0.0322, "n": 28}, "15": {"mean": 2.6856, "median": 2.6994, "p10": 2.5978, "p90": 2.8185, "medape": 0.0268, "n": 28}, "16": {"mean": 2.3704, "median": 2.3731, "p10": 2.2707, "p90": 2.4851, "medape": 0.0259, "n": 28}, "17": {"mean": 2.0886, "median": 2.0883, "p10": 2.02, "p90": 2.1799, "medape": 0.0212, "n": 28}, "18": {"mean": 1.8343, "median": 1.8456, "p10": 1.7867, "p90": 1.8903, "medape": 0.0112, "n": 28}, "19": {"mean": 1.5843, "median": 1.5884, "p10": 1.5583, "p90": 1.6148, "medape": 0.0106, "n": 28}, "20": {"mean": 1.3801, "median": 1.3842, "p10": 1.3476, "p90": 1.4214, "medape": 0.0163, "n": 28}, "21": {"mean": 1.1845, "median": 1.1884, "p10": 1.1607, "p90": 1.2077, "medape": 0.0125, "n": 28}}, "6": {"23": {"mean": 38.0626, "median": 36.89, "p10": 33.1555, "p90": 43.7981, "medape": 0.0994, "n": 27}, "0": {"mean": 23.4019, "median": 22.5, "p10": 21.178, "p90": 27.2693, "medape": 0.0784, "n": 27}, "1": {"mean": 18.7524, "median": 18.4553, "p10": 16.5335, "p90": 21.7354, "medape": 0.0703, "n": 27}, "2": {"mean": 16.7734, "median": 16.2723, "p10": 14.9113, "p90": 19.5384, "medape": 0.0499, "n": 27}, "3": {"mean": 15.855, "median": 15.5223, "p10": 14.1401, "p90": 18.3756, "medape": 0.0487, "n": 27}, "4": {"mean": 15.3141, "median": 15.1144, "p10": 13.7631, "p90": 17.8935, "medape": 0.0588, "n": 27}, "5": {"mean": 14.9421, "median": 14.7037, "p10": 13.2851, "p90": 17.5645, "medape": 0.045, "n": 27}, "6": {"mean": 14.4879, "median": 14.2806, "p10": 12.8945, "p90": 16.9854, "medape": 0.0556, "n": 27}, "7": {"mean": 13.8512, "median": 13.6382, "p10": 12.2407, "p90": 16.2366, "medape": 0.0483, "n": 27}, "8": {"mean": 12.6621, "median": 12.6436, "p10": 11.0198, "p90": 14.463, "medape": 0.0517, "n": 27}, "9": {"mean": 10.8241, "median": 10.7647, "p10": 9.5141, "p90": 12.1403, "medape": 0.0597, "n": 27}, "10": {"mean": 8.8034, "median": 8.7791, "p10": 7.7724, "p90": 9.8677, "medape": 0.0526, "n": 27}, "11": {"mean": 6.9549, "median": 6.9518, "p10": 6.3237, "p90": 7.5542, "medape": 0.0507, "n": 27}, "12": {"mean": 5.6151, "median": 5.5474, "p10": 5.1727, "p90": 6.1075, "medape": 0.0396, "n": 27}, "13": {"mean": 4.6626, "median": 4.5833, "p10": 4.3781, "p90": 5.0901, "medape": 0.0363, "n": 27}, "14": {"mean": 3.9318, "median": 3.8914, "p10": 3.6591, "p90": 4.2541, "medape": 0.0397, "n": 27}, "15": {"mean": 3.3576, "median": 3.3185, "p10": 3.1183, "p90": 3.6401, "medape": 0.0395, "n": 27}, "16": {"mean": 2.8943, "median": 2.8581, "p10": 2.7053, "p90": 3.0889, "medape": 0.0398, "n": 27}, "17": {"mean": 2.495, "median": 2.4702, "p10": 2.3453, "p90": 2.6498, "medape": 0.0352, "n": 27}, "18": {"mean": 2.1275, "median": 2.1113, "p10": 1.9858, "p90": 2.2852, "medape": 0.0389, "n": 27}, "19": {"mean": 1.7569, "median": 1.7603, "p10": 1.6826, "p90": 1.8081, "medape": 0.0213, "n": 27}, "20": {"mean": 1.4633, "median": 1.4609, "p10": 1.4078, "p90": 1.5168, "medape": 0.0209, "n": 27}, "21": {"mean": 1.2058, "median": 1.2043, "p10": 1.1833, "p90": 1.2328, "medape": 0.0125, "n": 27}}}, "curves": {"0": {"23": 0.0544, "0": 0.0861, "1": 0.1035, "2": 0.1126, "3": 0.1174, "4": 0.1204, "5": 0.1227, "6": 0.1266, "7": 0.1363, "8": 0.1592, "9": 0.1859, "10": 0.213, "11": 0.2389, "12": 0.2638, "13": 0.2905, "14": 0.3192, "15": 0.3481, "16": 0.3795, "17": 0.4154, "18": 0.4644, "19": 0.5439, "20": 0.6579, "21": 0.8081}, "1": {"23": 0.0486, "0": 0.0777, "1": 0.0947, "2": 0.1027, "3": 0.107, "4": 0.1101, "5": 0.1126, "6": 0.1164, "7": 0.1254, "8": 0.1476, "9": 0.1759, "10": 0.2023, "11": 0.2274, "12": 0.2517, "13": 0.2771, "14": 0.3041, "15": 0.3316, "16": 0.3605, "17": 0.3955, "18": 0.4454, "19": 0.5253, "20": 0.6355, "21": 0.7932}, "2": {"23": 0.0507, "0": 0.0812, "1": 0.0979, "2": 0.1064, "3": 0.1117, "4": 0.1151, "5": 0.118, "6": 0.1218, "7": 0.131, "8": 0.154, "9": 0.1829, "10": 0.2115, "11": 0.2374, "12": 0.2626, "13": 0.2882, "14": 0.3166, "15": 0.3451, "16": 0.3752, "17": 0.4145, "18": 0.4633, "19": 0.5424, "20": 0.6536, "21": 0.8029}, "3": {"23": 0.0466, "0": 0.0747, "1": 0.0902, "2": 0.0984, "3": 0.1034, "4": 0.1067, "5": 0.1092, "6": 0.1127, "7": 0.1218, "8": 0.1434, "9": 0.1709, "10": 0.1975, "11": 0.2222, "12": 0.2458, "13": 0.2706, "14": 0.3006, "15": 0.3292, "16": 0.358, "17": 0.393, "18": 0.442, "19": 0.5287, "20": 0.6413, "21": 0.7976}, "4": {"23": 0.0388, "0": 0.063, "1": 0.0773, "2": 0.0846, "3": 0.0891, "4": 0.0918, "5": 0.0939, "6": 0.0972, "7": 0.1062, "8": 0.1269, "9": 0.1534, "10": 0.1786, "11": 0.2034, "12": 0.2272, "13": 0.2509, "14": 0.2781, "15": 0.3063, "16": 0.3363, "17": 0.3733, "18": 0.4265, "19": 0.5206, "20": 0.6453, "21": 0.8024}, "5": {"23": 0.0346, "0": 0.0558, "1": 0.0689, "2": 0.076, "3": 0.0807, "4": 0.0834, "5": 0.0857, "6": 0.0888, "7": 0.0936, "8": 0.1057, "9": 0.1269, "10": 0.1588, "11": 0.1975, "12": 0.2415, "13": 0.2827, "14": 0.3276, "15": 0.3734, "16": 0.423, "17": 0.4797, "18": 0.5458, "19": 0.6317, "20": 0.725, "21": 0.8445}, "6": {"23": 0.0268, "0": 0.0434, "1": 0.0541, "2": 0.0603, "3": 0.0639, "4": 0.0661, "5": 0.0678, "6": 0.0699, "7": 0.0731, "8": 0.0799, "9": 0.0934, "10": 0.1148, "11": 0.1449, "12": 0.1792, "13": 0.2157, "14": 0.2558, "15": 0.2994, "16": 0.347, "17": 0.4024, "18": 0.4717, "19": 0.5699, "20": 0.684, "21": 0.8295}}, "meta": {"days": 192, "range": ["2026-01-01", "2026-07-14"], "final_mean_by_wd": {"0": 3001, "1": 2704, "2": 2760, "3": 2702, "4": 3255, "5": 3651, "6": 4276}}, "finals": {"2026-01-01": 2674, "2026-01-02": 3040, "2026-01-03": 3294, "2026-01-04": 3970, "2026-01-05": 2695, "2026-01-06": 2399, "2026-01-07": 2495, "2026-01-08": 2871, "2026-01-09": 3141, "2026-01-10": 3470, "2026-01-11": 3746, "2026-01-12": 2527, "2026-01-13": 2566, "2026-01-14": 2611, "2026-01-15": 2591, "2026-01-16": 3149, "2026-01-17": 3445, "2026-01-18": 3600, "2026-01-19": 2676, "2026-01-20": 2422, "2026-01-21": 2370, "2026-01-22": 2420, "2026-01-23": 3141, "2026-01-24": 4076, "2026-01-25": 4324, "2026-01-26": 2959, "2026-01-27": 2447, "2026-01-28": 2524, "2026-01-29": 2388, "2026-01-30": 3127, "2026-01-31": 3576, "2026-02-01": 4146, "2026-02-02": 2786, "2026-02-03": 2384, "2026-02-04": 2385, "2026-02-05": 2396, "2026-02-06": 3108, "2026-02-07": 3440, "2026-02-08": 4127, "2026-02-09": 3095, "2026-02-10": 2496, "2026-02-11": 2698, "2026-02-12": 2679, "2026-02-13": 3319, "2026-02-14": 2972, "2026-02-18": 5379, "2026-02-19": 3345, "2026-02-20": 3181, "2026-02-21": 3453, "2026-02-22": 3905, "2026-02-23": 2692, "2026-02-24": 2474, "2026-02-25": 2641, "2026-02-26": 2621, "2026-02-27": 3282, "2026-02-28": 3978, "2026-03-01": 3899, "2026-03-02": 3520, "2026-03-03": 2635, "2026-03-04": 2515, "2026-03-05": 2340, "2026-03-06": 3061, "2026-03-07": 3422, "2026-03-08": 4318, "2026-03-09": 2744, "2026-03-10": 2347, "2026-03-11": 2440, "2026-03-12": 2500, "2026-03-13": 3218, "2026-03-14": 3827, "2026-03-15": 4656, "2026-03-16": 3032, "2026-03-17": 2479, "2026-03-18": 2523, "2026-03-19": 3212, "2026-03-20": 3244, "2026-03-21": 3848, "2026-03-22": 4997, "2026-03-23": 3161, "2026-03-24": 2971, "2026-03-25": 3369, "2026-03-26": 3306, "2026-03-27": 3938, "2026-03-28": 4530, "2026-03-29": 5078, "2026-03-30": 3469, "2026-03-31": 3242, "2026-04-01": 2952, "2026-04-02": 2906, "2026-04-03": 3484, "2026-04-04": 4333, "2026-04-05": 5992, "2026-04-06": 3197, "2026-04-07": 2516, "2026-04-08": 2585, "2026-04-09": 2413, "2026-04-10": 3497, "2026-04-11": 3881, "2026-04-12": 4681, "2026-04-13": 3579, "2026-04-14": 3211, "2026-04-15": 3397, "2026-04-16": 3280, "2026-04-17": 3699, "2026-04-18": 4430, "2026-04-19": 5770, "2026-04-20": 3250, "2026-04-21": 2937, "2026-04-22": 2579, "2026-04-23": 3324, "2026-04-24": 3487, "2026-04-25": 3950, "2026-04-26": 4743, "2026-04-27": 2931, "2026-04-28": 2861, "2026-04-29": 2810, "2026-04-30": 2980, "2026-05-01": 3601, "2026-05-02": 3023, "2026-05-03": 3477, "2026-05-04": 2910, "2026-05-05": 3813, "2026-05-06": 2785, "2026-05-07": 2579, "2026-05-08": 2928, "2026-05-09": 3507, "2026-05-10": 4190, "2026-05-11": 2942, "2026-05-12": 2964, "2026-05-13": 2768, "2026-05-14": 2770, "2026-05-15": 3444, "2026-05-16": 4156, "2026-05-17": 4818, "2026-05-18": 3287, "2026-05-19": 2825, "2026-05-20": 2439, "2026-05-21": 2781, "2026-05-22": 3399, "2026-05-23": 3759, "2026-05-24": 3348, "2026-05-25": 4264, "2026-05-26": 3053, "2026-05-27": 2827, "2026-05-28": 2784, "2026-05-29": 3184, "2026-05-30": 3743, "2026-05-31": 4926, "2026-06-01": 2901, "2026-06-02": 2483, "2026-06-03": 3392, "2026-06-04": 2489, "2026-06-05": 2953, "2026-06-06": 3291, "2026-06-07": 3696, "2026-06-08": 2748, "2026-06-09": 3322, "2026-06-10": 2406, "2026-06-11": 2356, "2026-06-12": 3008, "2026-06-13": 3285, "2026-06-14": 3716, "2026-06-15": 2828, "2026-06-16": 2367, "2026-06-17": 2447, "2026-06-18": 2500, "2026-06-19": 3220, "2026-06-20": 3519, "2026-06-21": 4096, "2026-06-22": 2736, "2026-06-23": 2473, "2026-06-24": 2403, "2026-06-25": 2389, "2026-06-26": 2982, "2026-06-27": 3348, "2026-06-28": 3906, "2026-06-29": 2823, "2026-06-30": 2625, "2026-07-01": 2485, "2026-07-02": 2338, "2026-07-03": 3149, "2026-07-04": 3318, "2026-07-05": 3689, "2026-07-06": 2609, "2026-07-07": 2439, "2026-07-08": 2293, "2026-07-09": 2412, "2026-07-10": 3143, "2026-07-11": 3362, "2026-07-12": 3645, "2026-07-13": 2660, "2026-07-14": 2258}};
+const WDNAMES = ["월","화","수","목","금","토","일"];
+const SEQ = [23,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21];
+const fmt = n => Math.round(n).toLocaleString("ko-KR");
+const $ = id => document.getElementById(id);
+function hourLabel(t){ return t===23 ? "전날 23시" : (t===0 ? "0시 (자정)" : t + "시"); }
+
+const dateIn = $("date"), hourSel = $("hour"), countIn = $("count");
+SEQ.forEach(t=>{ const o=document.createElement("option"); o.value=t; o.textContent=hourLabel(t)+" 기준"; hourSel.appendChild(o); });
+
+// today (Asia/Seoul); collection day flips at 22:00
+const nowKST = new Date(new Date().toLocaleString("en-US",{timeZone:"Asia/Seoul"}));
+(function(){
+  let d = new Date(nowKST);
+  const h = d.getHours();
+  if (h >= 22) { d.setDate(d.getDate()+1); hourSel.value = 23; }
+  else hourSel.value = Math.min(h,21);
+  const pad = n => String(n).padStart(2,"0");
+  dateIn.value = `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+  const wd = (d.getDay()+6)%7;
+  $("today-badge").textContent = `${d.getFullYear()}년 ${d.getMonth()+1}월 ${d.getDate()}일 ${WDNAMES[wd]}요일`;
+})();
+
+$("data-basis").textContent =
+  `배율 산정: ${DATA.meta.range[0]} ~ ${DATA.meta.range[1]} 실적 ${DATA.meta.days}일 · 런드리고 기준`;
+
+function selWd(){
+  const d = new Date(dateIn.value + "T00:00:00");
+  return (d.getDay()+6)%7;
+}
+function lastWeekFinal(){
+  // most recent same-weekday actual final strictly before selected date
+  const wd = selWd(), sel = dateIn.value;
+  let best = null;
+  for (const dt in DATA.finals){
+    if (dt >= sel) continue;
+    const w = (new Date(dt+"T00:00:00").getDay()+6)%7;
+    if (w === wd && (!best || dt > best)) best = dt;
+  }
+  return best ? {date: best, v: DATA.finals[best]} : null;
+}
+
+let armed = false; // becomes true after first 예측하기 click
+function render(){
+  const wd = selWd(), t = +hourSel.value;
+  const st = DATA.stats[wd] && DATA.stats[wd][t];
+  const c = parseFloat(countIn.value);
+  const has = armed && st && !isNaN(c) && c > 0;
+  $("fc-body").hidden = !has;
+  $("fc-empty").style.display = has ? "none" : "";
+  $("conf").hidden = !has;
+
+  const avg = DATA.meta.final_mean_by_wd[wd];
+  $("t-avg").innerHTML = fmt(avg) + "<small>건</small>";
+  $("t-avg-s").textContent = `${WDNAMES[wd]}요일 과거 평균 (${DATA.stats[wd][21] ? DATA.stats[wd][21].n : "–"}일)`;
+  const lw = lastWeekFinal();
+  if (lw){
+    $("t-lw").innerHTML = fmt(lw.v) + "<small>건</small>";
+    const d = new Date(lw.date+"T00:00:00");
+    $("t-lw-s").textContent = `${d.getMonth()+1}/${d.getDate()} ${WDNAMES[wd]}요일 실적`;
+  } else {
+    $("t-lw").textContent = "–"; $("t-lw-s").textContent = "데이터 없음";
+  }
+
+  let pred=null, lo=null, hi=null;
+  if (has){
+    pred=c*st.mean; lo=c*st.p10; hi=c*st.p90;
+    $("r-pred").textContent = fmt(pred);
+    $("r-range").textContent = `${fmt(lo)}–${fmt(hi)}건`;
+    $("m-n").innerHTML = st.n + "<small>일</small>";
+    $("m-share-k").textContent = hourLabel(t).replace(" (자정)","") + " 누적 비중";
+    $("m-share").innerHTML = (100/st.mean).toFixed(1) + "<small>%</small>";
+    $("m-err").innerHTML = (st.medape*100).toFixed(1) + "<small>%</small>";
+    const conf = $("conf");
+    if (st.medape < 0.05){ conf.textContent="예측 신뢰도 높음"; conf.className="conf high"; }
+    else if (st.medape < 0.12){ conf.textContent="예측 신뢰도 보통"; conf.className="conf mid"; }
+    else { conf.textContent="예측 신뢰도 낮음 (이른 시각)"; conf.className="conf mid"; }
+    $("t-left").innerHTML = fmt(Math.max(0,pred-c)) + "<small>건</small>";
+  } else {
+    $("t-left").textContent = "–";
+  }
+  drawChart(wd, t, has?c:null, pred, lo, hi);
+  drawTable(wd, t);
+}
+
+// ---- chart ----
+const svg = $("chart"), NS = "http://www.w3.org/2000/svg";
+const M = {t:24, r:120, b:36, l:60}, W = 980, H = 320;
+let chartPts = [];
+function el(tag, attrs, parent){
+  const e = document.createElementNS(NS, tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  (parent||svg).appendChild(e); return e;
+}
+function niceTicks(max){
+  const raw = max/4, mag = Math.pow(10, Math.floor(Math.log10(raw)));
+  const step = [1,2,2.5,5,10].map(m=>m*mag).find(s=>s>=raw) || 10*mag;
+  const ticks=[]; for(let v=0;v<=max*1.0001;v+=step) ticks.push(v);
+  return ticks;
+}
+function drawChart(wd, tSel, count, pred, lo, hi){
+  svg.innerHTML = ""; chartPts = [];
+  const curve = DATA.curves[wd];
+  const finalV = pred || DATA.meta.final_mean_by_wd[wd];
+  const seq = SEQ.filter(t => curve[t] !== undefined);
+  const pts = seq.map(t => ({t, v: curve[t]*finalV}));
+  pts.push({t:22, v:finalV, isFinal:true});
+  const n = pts.length;
+  const maxY = (hi ? Math.max(hi, finalV) : finalV) * 1.06;
+  const x = i => M.l + (W-M.l-M.r) * (i/(n-1));
+  const y = v => H-M.b - (H-M.b-M.t) * (v/maxY);
+
+  niceTicks(maxY).forEach(v=>{
+    el("line",{x1:M.l,x2:W-M.r,y1:y(v),y2:y(v),stroke:"var(--grid)","stroke-width":1});
+    el("text",{x:M.l-8,y:y(v)+4,"text-anchor":"end",fill:"var(--text-muted)","font-size":11,
+      style:"font-variant-numeric:tabular-nums"}).textContent = v.toLocaleString("ko-KR");
+  });
+  el("line",{x1:M.l,x2:W-M.r,y1:y(0),y2:y(0),stroke:"var(--baseline)","stroke-width":1});
+  pts.forEach((p,i)=>{
+    const lab = p.isFinal ? "마감" : (p.t===23 ? "전23" : p.t);
+    if (p.isFinal || p.t===23 || p.t%3===0)
+      el("text",{x:x(i),y:H-M.b+18,"text-anchor":"middle",fill:"var(--text-muted)","font-size":11}).textContent = lab;
+  });
+
+  if (lo != null){
+    const upper = pts.map((p,i)=>`${x(i)},${y(p.v/finalV*hi)}`);
+    const lower = pts.map((p,i)=>`${x(i)},${y(p.v/finalV*lo)}`).reverse();
+    el("polygon",{points: upper.concat(lower).join(" "), fill:"var(--series-1)", opacity:0.10});
+  }
+  el("polyline",{points: pts.map((p,i)=>`${x(i)},${y(p.v)}`).join(" "),
+    fill:"none", stroke:"var(--series-1)", "stroke-width":2, "stroke-linejoin":"round", "stroke-linecap":"round"});
+  el("polygon",{points: pts.map((p,i)=>`${x(i)},${y(p.v)}`).join(" ") + ` ${x(n-1)},${y(0)} ${x(0)},${y(0)}`,
+    fill:"var(--series-1)", opacity:0.08});
+
+  const last = pts[n-1];
+  el("circle",{cx:x(n-1),cy:y(last.v),r:5,fill:"var(--series-1)",stroke:"var(--surface-1)","stroke-width":2});
+  el("text",{x:x(n-1)+10,y:y(last.v)+1,fill:"var(--text-primary)","font-size":13,"font-weight":700})
+    .textContent = fmt(last.v) + "건";
+  el("text",{x:x(n-1)+10,y:y(last.v)+16,fill:"var(--text-muted)","font-size":11})
+    .textContent = pred ? "예상 마감" : "요일 평균 마감";
+
+  if (count != null){
+    const i = pts.findIndex(p=>p.t===tSel && !p.isFinal);
+    if (i>=0){
+      el("circle",{cx:x(i),cy:y(count),r:6,fill:"var(--series-1)",stroke:"var(--surface-1)","stroke-width":2});
+      el("text",{x:x(i),y:y(count)-12,"text-anchor":"middle",fill:"var(--text-primary)","font-size":12,"font-weight":700})
+        .textContent = `현재 ${fmt(count)}건`;
+    }
+  }
+  $("chart-meta").textContent = pred
+    ? `${WDNAMES[wd]}요일 평균 진행 패턴 × 이번 예측 마감치 기준`
+    : `${WDNAMES[wd]}요일 평균 진행 패턴 (평균 마감 ${fmt(finalV)}건 기준)`;
+
+  chartPts = pts.map((p,i)=>({x:x(i), y:y(p.v), v:p.v, t:p.t, isFinal:p.isFinal}));
+  el("line",{id:"xhair",x1:0,x2:0,y1:M.t,y2:H-M.b,stroke:"var(--baseline)","stroke-width":1,opacity:0});
+  el("circle",{id:"xdot",r:5,fill:"var(--series-1)",stroke:"var(--surface-1)","stroke-width":2,opacity:0});
+}
+
+const tip = $("tooltip");
+svg.addEventListener("pointermove", ev=>{
+  if (!chartPts.length) return;
+  const r = svg.getBoundingClientRect();
+  const px = (ev.clientX - r.left) / r.width * W;
+  let best = 0, bd = Infinity;
+  chartPts.forEach((p,i)=>{ const d=Math.abs(p.x-px); if(d<bd){bd=d;best=i;} });
+  const p = chartPts[best];
+  const xh = svg.querySelector("#xhair"), xd = svg.querySelector("#xdot");
+  xh.setAttribute("x1",p.x); xh.setAttribute("x2",p.x); xh.setAttribute("opacity",1);
+  xd.setAttribute("cx",p.x); xd.setAttribute("cy",p.y); xd.setAttribute("opacity",1);
+  tip.style.display = "block"; tip.innerHTML = "";
+  const t1 = document.createElement("div"); t1.className="t-time";
+  t1.textContent = p.isFinal ? "마감 (22시 정각)" : hourLabel(p.t) + " 시점";
+  const t2 = document.createElement("div"); t2.className="t-val";
+  const key = document.createElement("span"); key.className="t-key";
+  t2.appendChild(key); t2.appendChild(document.createTextNode(fmt(p.v) + "건"));
+  tip.appendChild(t1); tip.appendChild(t2);
+  const tw = tip.offsetWidth || 140;
+  let lx = ev.clientX + 14; if (lx + tw > window.innerWidth - 8) lx = ev.clientX - tw - 14;
+  tip.style.left = lx + "px"; tip.style.top = (ev.clientY - 10) + "px";
+});
+svg.addEventListener("pointerleave", ()=>{
+  tip.style.display = "none";
+  const xh = svg.querySelector("#xhair"), xd = svg.querySelector("#xdot");
+  if (xh){ xh.setAttribute("opacity",0); xd.setAttribute("opacity",0); }
+});
+
+// ---- ratio table ----
+let tableMode = "main";
+$("tg-main").onclick = ()=>{ tableMode="main"; $("tg-main").classList.add("on"); $("tg-all").classList.remove("on"); render(); };
+$("tg-all").onclick = ()=>{ tableMode="all"; $("tg-all").classList.add("on"); $("tg-main").classList.remove("on"); render(); };
+function drawTable(sWd, sT){
+  const tbl = $("ratio-table"); tbl.innerHTML = "";
+  const hours = tableMode==="main" ? [15,16,17,18,19,20,21] : SEQ;
+  const thead = document.createElement("thead");
+  const hr = document.createElement("tr");
+  hr.appendChild(document.createElement("th")).textContent = "집계 시각";
+  WDNAMES.forEach(n=>{ const th=document.createElement("th"); th.textContent=n; hr.appendChild(th); });
+  thead.appendChild(hr); tbl.appendChild(thead);
+  const tbody = document.createElement("tbody");
+  hours.forEach(t=>{
+    const tr = document.createElement("tr");
+    const td0 = document.createElement("td"); td0.textContent = hourLabel(t); tr.appendChild(td0);
+    for (let wd=0; wd<7; wd++){
+      const td = document.createElement("td");
+      const st = DATA.stats[wd] && DATA.stats[wd][t];
+      td.textContent = st ? st.mean.toFixed(2) : "–";
+      if (st) td.title = `${WDNAMES[wd]} ${hourLabel(t)} · 중앙값 ${st.median.toFixed(2)} · 80% 구간 ${st.p10.toFixed(2)}~${st.p90.toFixed(2)} · ${st.n}일`;
+      if (wd===sWd && t===sT) td.classList.add("sel");
+      tr.appendChild(td);
+    }
+    tbody.appendChild(tr);
+  });
+  tbl.appendChild(tbody);
+}
+
+[
+  "예측치 = 입력한 누적 신청수 × 해당 요일·시각의 평균 배율 (배율 = 과거 각 일자의 마감치 ÷ 그 시각 누적치, 요일별 평균).",
+  "예상 범위는 과거 배율 분포의 10~90 백분위(80% 구간), 과거 중앙 오차는 같은 요일·시각에 이 배율을 적용했을 때의 과거 오차 중앙값입니다.",
+  "명절·프로모션 등 특이일은 평균 패턴과 다를 수 있어 범위를 벗어날 수 있습니다.",
+  "데이터를 갱신하려면 새 CSV로 배율을 다시 산출해 이 페이지를 업데이트하면 됩니다."
+].forEach(s=>{ const li=document.createElement("li"); li.textContent=s; $("foot").appendChild(li); });
+
+$("go").addEventListener("click", ()=>{ armed = true; render(); });
+countIn.addEventListener("keydown", e=>{ if (e.key==="Enter"){ armed = true; render(); } });
+[dateIn, hourSel].forEach(elm => elm.addEventListener("change", render));
+countIn.addEventListener("input", ()=>{ if (armed) render(); });
+render();
+countIn.focus();
+</script>
+</body>
+</html>

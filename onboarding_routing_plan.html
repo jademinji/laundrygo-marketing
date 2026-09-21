@@ -144,8 +144,8 @@
   .insight b{color:var(--accent);}
   .insight .dot{color:var(--accent); font-weight:700; flex-shrink:0;}
   .scroll{overflow-x:auto; padding:6px 0 4px;}
-  .map{position:relative; width:1000px; height:620px; margin:0 auto;}
-  .map svg{position:absolute; inset:0; width:1000px; height:620px; pointer-events:none;}
+  .map{position:relative; width:1000px; height:660px; margin:0 auto;}
+  .map svg{position:absolute; inset:0; width:1000px; height:660px; pointer-events:none;}
   .node{position:absolute; border:1px solid var(--hairline); border-radius:12px; background:#fff; padding:9px 12px; display:flex; flex-direction:column; justify-content:center;}
   .node .nt{font-size:13.5px; font-weight:700; letter-spacing:-.01em;}
   .node .ns{font-size:11.5px; color:var(--ink-48); margin-top:2px;}
@@ -173,7 +173,8 @@
   .dest.pass .dname{color:var(--up);} .dest.pass .dnum b{color:var(--up);}
   .dest.sub{border-color:rgba(0,102,204,.5); background:var(--accent-l);}
   .dest.sub .dname{color:var(--accent);} .dest.sub .dnum b{color:var(--accent);}
-  .guardlbl{position:absolute; left:600px; top:500px; width:180px; text-align:center; font-size:10.5px; color:var(--dn); font-weight:600; line-height:1.3;}
+  .guardlbl{position:absolute; left:600px; top:500px; width:180px; text-align:center; font-size:10.5px; color:var(--ink-48); font-weight:600; line-height:1.3;}
+  .fblbl{position:absolute; left:585px; top:632px; width:210px; text-align:center; font-size:11px; color:var(--accent); font-weight:700;}
   .legend{display:flex; flex-wrap:wrap; gap:12px 20px; padding-top:12px; margin-top:2px; font-size:12px; color:var(--ink-80);}
   .legend .li{display:flex; align-items:center; gap:7px;}
   .sw{width:12px; height:12px; border-radius:3px;}
@@ -309,7 +310,7 @@
       </div>
       <div class="branch coupon">
         <div class="bn">전품목 20% 선택 → 구독·정기 할인</div>
-        <p><b>가격·할인에 반응</b> = 세탁을 싸게 자주 하려는 층. 다음 할인 + <b>구독(정기 번들) 티저</b>로 3회차 유도.</p>
+        <p><b>할인에 반응</b>하는 층. “쿠폰은 이번 1회지만, <b>구독은 초과 이용분을 상시 20% 할인</b>”을 짚어 3회차·구독으로 유도.</p>
       </div>
       <div class="branch item">
         <div class="bn">이불 50% 선택 → 품목·시즌 리마인드</div>
@@ -325,17 +326,19 @@
 
     <div class="insight">
       <span class="dot">▲</span>
-      <div><b>분류축은 객단가가 아니라 총지출.</b> “4회+ → 객단가 3만원”으로 나누면 현재 패스 세그 24,140명 중 <b>43.6%(10,523명)</b>가 총지출 15만원↑ — 자주·많이 쓰는데 객단가만 낮아 <b>구독감인데 패스로 오분류</b>된다. 축을 총지출(빈도×객단가)로 바꾸면 이 다운셀이 해소된다(반대 방향 오분류는 0명).</div>
+      <div><b>분류축은 “월 총지출”.</b> 실제 구독자(결제 데이터 4~8월)는 <b>월 총지출 중앙값 4.3만원</b>을 쓰는 고볼륨층이고 <b>79%가 초과이용</b>까지 한다. 그래서 자유 유저를 <b>월 총지출(≥4만)</b>로 잘라 구독으로, 소량이지만 반복 방문하는 층은 <b>배송비 허들 제거(패스)</b>로 라우팅한다. (1회 객단가는 낮아도 월 총지출이 크면 구독行.)</div>
     </div>
 
     <div class="scroll">
     <div class="map">
-      <svg viewBox="0 0 1000 620" xmlns="http://www.w3.org/2000/svg">
+      <svg viewBox="0 0 1000 660" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <marker id="arw" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
             <path d="M0,0 L10,5 L0,10 z" fill="var(--edge)"/></marker>
           <marker id="arwA" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
             <path d="M0,0 L10,5 L0,10 z" fill="var(--amber)"/></marker>
+          <marker id="arwS" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="var(--accent)"/></marker>
         </defs>
         <g fill="none" stroke="var(--edge)" stroke-width="1.6">
           <path d="M174,87 L206,87" marker-end="url(#arw)"/>
@@ -346,7 +349,7 @@
           <path d="M710,418 C770,440 800,448 835,452" marker-end="url(#arw)"/>
         </g>
         <path d="M520,308 C430,308 452,150 505,120" fill="none" stroke="var(--amber)" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#arwA)"/>
-        <path d="M690,460 L690,500" stroke="var(--dn)" stroke-width="1.3" stroke-dasharray="4 4"/>
+        <path d="M838,610 C838,648 542,648 542,613" fill="none" stroke="var(--accent)" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#arwS)"/>
       </svg>
 
       <div class="node stage" style="left:24px; top:56px; width:150px; height:62px;">
@@ -356,38 +359,39 @@
         <div class="nt">온보딩 · Day 0–28</div><div class="ns">쿠폰팩 3종(선택) · 14일 2웨이브</div>
       </div>
       <div class="node stage nurture-stage" style="left:430px; top:56px; width:156px; height:62px;">
-        <div class="nt">온보딩·육성</div><div class="ns">1–3회 · 165,519명</div>
+        <div class="nt">온보딩·육성</div><div class="ns">소량·저빈도·휴면</div>
       </div>
       <div class="node pool" style="left:626px; top:56px; width:170px; height:62px;">
-        <div class="nt">기존 자유 유저 풀</div><div class="ns">233,461명 (게이트 대상)</div>
+        <div class="nt">기존 자유 유저 풀</div><div class="ns">최근 활성 → 게이트 분류</div>
       </div>
 
       <div class="gate" style="left:520px; top:198px; width:380px; height:220px;">
         <div class="gt">분류 게이트 <small>— 자유 풀 대상</small></div>
         <div class="gstep"><span class="num">1</span>현재 정기적으로 잘 이용하는가?</div>
-        <div class="gstep" style="padding-left:21px;">활성 &amp; 최근 4회+ <span class="no">· 아니오 → 육성 유지 / 윈백</span></div>
-        <div class="gstep"><span class="num">2</span>구독이 이득이 될 만큼 쓰는가?</div>
-        <div class="gstep" style="padding-left:21px;">총지출(빈도×객단가) ≥ 손익분기 T ?</div>
-        <div class="gstep" style="padding-left:21px;">예 → <span class="toSub">구독</span> &nbsp;·&nbsp; 아니오(소량·저객단가) → <span class="toPass">런드리고패스</span></div>
+        <div class="gstep" style="padding-left:21px;">최근 활성(휴면 아님) <span class="no">· 아니오 → 육성 / 윈백</span></div>
+        <div class="gstep"><span class="num">2</span>월 총지출이 충분히 큰가? (볼륨)</div>
+        <div class="gstep" style="padding-left:21px;">월 총지출 ≥ <b>4만원</b> (구독자 중앙값) ?</div>
+        <div class="gstep" style="padding-left:21px;">예 → <span class="toSub">구독</span> &nbsp;·&nbsp; 아니오 &amp; 반복(<b>월 0.76회+</b> = 2,900÷3,800) → <span class="toPass">런드리고패스</span></div>
         <div class="gmod">＋ 보정: 최근성(휴면 → 윈백) · 추세(상승 → 구독 가속)</div>
       </div>
 
       <div class="node dest pass" style="left:430px; top:452px; width:224px; height:158px;">
         <div class="dname">런드리고패스</div>
-        <div class="dtag">저총액 · 고빈도 · 배송비 부담층</div>
+        <div class="dtag">소량 · 반복 · 배송비 허들</div>
         <div class="row"><span class="k">오퍼</span> 월 2,900원 무제한 무료배송</div>
         <div class="row"><span class="k">화법</span> 배송비 누적 1.7만 → 0원</div>
-        <div class="dnum">자유 풀의 <b>약 10%</b></div>
+        <div class="dnum">자유의 <b>약 14%</b></div>
       </div>
       <div class="node dest sub" style="left:726px; top:452px; width:224px; height:158px;">
         <div class="dname">구독</div>
-        <div class="dtag">고총액 · 고빈도</div>
+        <div class="dtag">월 총지출 4만+ · 고볼륨</div>
         <div class="row"><span class="k">오퍼</span> 락인 · 건당 절감</div>
         <div class="row"><span class="k">화법</span> 90일 N건 → Y원 절약</div>
-        <div class="dnum">자유 풀의 <b>약 19%</b></div>
+        <div class="dnum">자유의 <b>약 10%</b></div>
       </div>
 
-      <div class="guardlbl">✕ 구독 ↔ 패스 미교차<br>(상호배타 · 다운셀 차단)</div>
+      <div class="guardlbl">한 번에 한 오퍼만<br>(동시 노출 금지)</div>
+      <div class="fblbl">구독 2회 미전환 → 패스로 폴백</div>
     </div>
     </div>
 
@@ -397,7 +401,7 @@
       <div class="li"><span class="sw sub"></span>구독 (고총액·고빈도)</div>
       <div class="li"><span class="dash"></span>4회 미만 → 육성 잔류(루프)</div>
     </div>
-    <div class="mapnote">비중은 자유 풀 233,461명 기준(빈도×객단가). 패스 ~10% + 구독 ~19% ≈ 29%이며, 나머지 71%는 저빈도·휴면 등 아직 라우팅 대상이 아님(둘의 합은 100이 아님). 게이트 최종 분류는 총지출·활성(최근성) 기준으로 확정. A/B 실증 전환(무료배송 쿠폰): 저단가 7.3% · 고단가 9.7%.</div>
+    <div class="mapnote">비중은 결제 데이터(2026.4~8) 기준 · 최근 활성 자유 유저 대비. 구독 기준선 = 실제 구독자 월 총지출 중앙값 <b>4만원</b> → 구독 ~10% · 패스 ~14% · 나머지(육성·휴면)는 라우팅 대상 아님(합은 100이 아님). 구독자 79%가 초과이용하는 고볼륨층이며, 초과·배송만 찍히는 배송 데이터가 아닌 결제(구독료+초과) 기준.</div>
 
     <div class="guard">
       <b>가드레일 — 다운셀 차단.</b> 구독 후보에는 2,900원 패스를 노출하지 말 것. 총지출 기준 분류가 이 다운셀을 구조적으로 크게 줄이지만, 발송 단계에서 한 유저가 두 오퍼를 동시에 받지 않게 세그를 <b>상호배타</b>로 설정.

@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>유저를 다시 오게 하는 2가지 전략 — 런드리고</title>
+<style>
+  :root{
+    --parchment:#f5f5f7; --ink:#1d1d1f; --ink-80:#3a3a3c; --ink-48:#7a7a7a;
+    --hairline:#e6e6e8; --divider:#f0f0f0;
+    --accent:#0066cc; --accent-l:rgba(0,102,204,0.08);
+    --up:#1d9e75; --up-l:rgba(29,158,117,0.12);
+    --dn:#d85a30; --dn-l:rgba(216,90,48,0.12);
+    --amber:#9a6a11; --amber-l:rgba(154,106,17,0.12);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;}
+  body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Apple SD Gothic Neo','Pretendard',system-ui,sans-serif;
+       background:#fff; color:var(--ink); -webkit-font-smoothing:antialiased; line-height:1.65; font-size:16px;
+       word-break:keep-all; text-wrap:pretty;}
+  .wrap{max-width:820px; margin:0 auto; padding:44px 28px 60px;}
+
+  header{margin-bottom:28px;}
+  .kicker{font-size:14px; color:var(--ink-48); margin-bottom:10px;}
+  h1{font-size:30px; font-weight:800; letter-spacing:-.02em; margin:0 0 12px; line-height:1.2;}
+  .lead{font-size:17px; color:var(--ink-80);}
+  .lead b{color:var(--ink);}
+
+  /* 3-line summary */
+  .tldr{background:var(--parchment); border-radius:16px; padding:22px 24px; margin:26px 0 40px;}
+  .tldr h2{font-size:13px; font-weight:800; color:var(--accent); margin:0 0 12px; letter-spacing:.02em;}
+  .tldr ol{margin:0; padding-left:22px;}
+  .tldr li{font-size:16px; color:var(--ink-80); margin-bottom:8px;}
+  .tldr li:last-child{margin-bottom:0;}
+  .tldr li b{color:var(--ink);}
+
+  .sec{margin:0 0 44px;}
+  .sec .st{font-size:22px; font-weight:800; letter-spacing:-.02em; margin:0 0 4px;}
+  .sec .sd{font-size:15px; color:var(--ink-48); margin:0 0 20px;}
+
+  /* funnel (사람이 줄어드는 그림) */
+  .funnel{border:1px solid var(--hairline); border-radius:16px; padding:22px 24px 20px;}
+  .frow{display:flex; align-items:center; gap:14px; margin:0;}
+  .flabel{width:96px; flex-shrink:0; font-size:15px; font-weight:700; text-align:right;}
+  .fbarwrap{flex:1; background:var(--divider); border-radius:9px; height:44px; overflow:hidden;}
+  .fbar{height:100%; border-radius:9px; display:flex; align-items:center; padding-left:16px; color:#fff; font-weight:800; font-size:15px; white-space:nowrap;}
+  .drop{display:flex; align-items:center; gap:14px; margin:6px 0;}
+  .drop .sp{width:96px; flex-shrink:0;}
+  .drop .badge{font-size:14px; font-weight:800; padding:3px 12px; border-radius:20px; background:var(--dn-l); color:var(--dn);}
+  .drop .note{font-size:14px; color:var(--ink-48);}
+  .hint{font-size:15px; color:var(--ink-80); margin-top:16px; padding-top:15px; border-top:1px solid var(--divider);}
+  .hint b{color:var(--dn);}
+
+  /* strategy card */
+  .card{border:1px solid var(--hairline); border-radius:16px; overflow:hidden;}
+  .card .top{display:flex; align-items:center; gap:14px; padding:18px 22px; border-bottom:1px solid var(--hairline);}
+  .card .num{width:34px; height:34px; border-radius:50%; color:#fff; font-size:16px; font-weight:800; display:flex; align-items:center; justify-content:center; flex-shrink:0;}
+  .card .ct{font-size:19px; font-weight:800; letter-spacing:-.01em;}
+  .card .body{padding:20px 22px;}
+  .qa{margin-bottom:16px;}
+  .qa:last-child{margin-bottom:0;}
+  .qa .q{font-size:15px; font-weight:800; color:var(--accent); margin-bottom:4px;}
+  .qa .a{font-size:16px; color:var(--ink-80);}
+  .qa .a b{color:var(--ink);}
+  .oneline{margin-top:16px; background:var(--accent-l); border-radius:12px; padding:14px 18px; font-size:16px; color:var(--ink-80);}
+  .oneline b{color:var(--accent);}
+
+  /* two roads */
+  .roads{display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px;}
+  .road{border:1px solid var(--hairline); border-radius:14px; padding:18px 20px; border-top-width:5px;}
+  .road.sub{border-top-color:var(--accent);}
+  .road.pass{border-top-color:var(--up);}
+  .road .rn{font-size:19px; font-weight:800;}
+  .road.sub .rn{color:var(--accent);} .road.pass .rn{color:var(--up);}
+  .road .rwho{font-size:15px; color:var(--ink-80); margin:6px 0 12px;}
+  .road .rwho b{color:var(--ink);}
+  .road .rwhy{font-size:15px; color:var(--ink-80); background:var(--parchment); border-radius:10px; padding:11px 14px;}
+  .road .rwhy b{color:var(--ink);}
+  .road .rsz{font-size:14px; color:var(--ink-48); margin-top:10px;}
+  .rest{border:1px solid var(--hairline); border-radius:14px; padding:15px 20px; font-size:15px; color:var(--ink-80); line-height:1.6;}
+  .rest b{color:var(--ink);}
+  .rest .arrow{color:var(--accent); font-weight:800;}
+
+  .note-box{background:var(--amber-l); border-radius:14px; padding:18px 22px; font-size:15.5px; color:var(--ink-80); line-height:1.7;}
+  .note-box .nh{font-size:15px; font-weight:800; color:var(--amber); margin-bottom:6px;}
+  .note-box b{color:var(--ink);}
+
+  .foot{font-size:13px; color:var(--ink-48); margin-top:34px; padding-top:16px; border-top:1px solid var(--hairline); line-height:1.6;}
+
+  @media (max-width:640px){
+    .roads{grid-template-columns:1fr;}
+    .flabel,.drop .sp{width:62px; font-size:13px;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="kicker">런드리고 · 리더십 공유 · 쉬운 요약본</div>
+    <h1>유저를 다시 오게 하는 2가지 전략</h1>
+    <div class="lead"><b>첫 주문을 마친 손님</b>을 <b>다시 오게</b> 만들고, 자주 오는 <b>단골</b>은 알맞은 멤버십으로 안내합니다. 어려운 용어 없이 정리했습니다.</div>
+  </header>
+
+  <div class="tldr">
+    <h2>3줄 요약</h2>
+    <ol>
+      <li>손님은 <b>첫 주문 → 두 번째</b>, <b>두 번째 → 세 번째</b> 두 고비에서 많이 빠집니다. 원인은 대부분 <b>두 번째부터 붙는 배송비</b>.</li>
+      <li><b>첫 주문을 마친 손님</b>에겐 쿠폰 3장을 한 번에 주고 <b>원하는 걸 골라 쓰게</b> 해서 두 번째 주문을 만듭니다.</li>
+      <li><b>단골</b>은 <b>한 달에 쓰는 돈</b>으로 나눠 — 많이 쓰면 <b>구독</b>, 한 달에 한 번쯤 맡기면 <b>런드리고패스</b>로 안내합니다.</li>
+    </ol>
+  </div>
+
+  <!-- 문제 그림 -->
+  <div class="sec">
+    <div class="st">먼저, 손님이 어디서 빠지나요?</div>
+    <div class="sd">주문을 한 번 한 손님이 두 번, 세 번으로 갈수록 이만큼 남습니다.</div>
+    <div class="funnel">
+      <div class="frow">
+        <div class="flabel">1번 주문</div>
+        <div class="fbarwrap"><div class="fbar" style="width:100%; background:var(--ink-80);">100명</div></div>
+      </div>
+      <div class="drop"><div class="sp"></div><span class="badge">↓ 43명 빠짐</span><span class="note">가장 큰 고비 — 두 번째부터 배송비가 처음 보임</span></div>
+      <div class="frow">
+        <div class="flabel">2번 이상</div>
+        <div class="fbarwrap"><div class="fbar" style="width:57%; background:var(--accent);">57명</div></div>
+      </div>
+      <div class="drop"><div class="sp"></div><span class="badge">↓ 18명 더 빠짐</span><span class="note">두 번째 고비 — 여기서 또 3분의 1이 사라짐</span></div>
+      <div class="frow">
+        <div class="flabel">3번 이상<br><span style="font-weight:500; font-size:13px; color:var(--up)">= 단골</span></div>
+        <div class="fbarwrap"><div class="fbar" style="width:39%; background:var(--up);">39명</div></div>
+      </div>
+      <div class="hint"><b>핵심:</b> 이 두 고비(43명·18명)를 넘기는 게 전부입니다. 세 번 이상 오면 습관이 붙어 잘 안 빠집니다.</div>
+    </div>
+  </div>
+
+  <!-- 전략 1 -->
+  <div class="sec">
+    <div class="card">
+      <div class="top"><span class="num" style="background:var(--accent);">1</span><span class="ct">첫 주문을 마친 손님 → 두 번째 주문 만들기</span></div>
+      <div class="body">
+        <div class="qa">
+          <div class="q">왜 안 돌아올까?</div>
+          <div class="a">첫 세탁은 무료였는데, <b>두 번째부터 배송비</b>가 붙어서요. 게다가 손님은 보통 <b>한 달쯤(약 37일) 뒤</b>에 돌아오는데, 예전 쿠폰은 <b>7일</b>만 쓸 수 있어 그 전에 사라졌습니다.</div>
+        </div>
+        <div class="qa">
+          <div class="q">어떻게 바꾸나?</div>
+          <div class="a">첫 세탁이 끝나면 <b>쿠폰 3장(무료배송 · 전체 20% 할인 · 이불 반값)</b>을 한 번에 주고, 손님이 <b>마음에 드는 걸 골라</b> 쓰게 합니다. 쓸 수 있는 기간은 <b>7일 → 14일</b>로 늘리고, 그래도 안 오면 <b>14일짜리 쿠폰을 한 번 더</b> 보냅니다.</div>
+        </div>
+        <div class="oneline"><b>한마디로:</b> “손님이 다시 올 시간에 맞춰, 원하는 혜택을 골라 쓰게 하자.”</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 전략 2 -->
+  <div class="sec">
+    <div class="card">
+      <div class="top"><span class="num" style="background:var(--up);">2</span><span class="ct">단골 → 구독 또는 런드리고패스로 안내</span></div>
+      <div class="body">
+        <div class="qa">
+          <div class="q">무엇으로 나누나?</div>
+          <div class="a"><b>한 달에 우리에게 쓰는 돈</b>으로 나눕니다. 실제 구독 손님을 보니 <b>한 달 평균 4만 원 이상</b> 쓰는 <b>‘많이 맡기는’ 손님</b>이었고, 10명 중 8명은 정해진 양보다 더 맡길 정도였습니다.</div>
+        </div>
+
+        <div class="roads">
+          <div class="road sub">
+            <div class="rn">구독</div>
+            <div class="rwho"><b>한 달에 많이 맡기는 손님</b> (월 4만 원 이상)</div>
+            <div class="rwhy">많이 맡기니 <b>월정액이 더 이득</b>. 자주 오는 손님의 약 <b>10%</b>.</div>
+          </div>
+          <div class="road pass">
+            <div class="rn">런드리고패스</div>
+            <div class="rwho"><b>많이는 아니어도 한 달에 한 번쯤 맡기는 손님</b></div>
+            <div class="rwhy">패스는 월 <b>2,900원</b>인데 배송비가 <b>3,800원</b> → <b>한 달에 한 번만 맡겨도 이득</b>. 약 <b>14%</b>.</div>
+          </div>
+        </div>
+
+        <div class="rest">
+          <b>그 외 손님</b>(가끔 오거나 한동안 안 온 손님) <span class="arrow">→</span> 먼저 <b>다시 오게</b> 만드는 데 집중.<br>
+          <b>구독을 두 번 권했는데도 안 하면</b> <span class="arrow">→</span> 부담 적은 <b>패스로 내려서</b> 제안.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 짚어둘 점 -->
+  <div class="sec" style="margin-bottom:0;">
+    <div class="st">한 번 더 짚어둘 점</div>
+    <div class="sd" style="margin-bottom:14px;">이번 주제(누구를 어디로 보낼지)와는 별개지만, 알아두면 좋은 배경입니다.</div>
+    <div class="note-box">
+      <div class="nh">지금 구독은 확 늘리기 어려운 구조입니다</div>
+      지금 구독은 손님이 <b>한 달에 2번 이상</b> 써야 이득이라, 정말 이득 보는 손님이 많지 않습니다. 또 <b>배송 한 번에 우리가 쓰는 돈(7,260원)이 받는 돈(3,800원)보다 커서</b>, 구독을 늘린다고 바로 이익으로 이어지지 않습니다. → <b>구독 전체 전략을 다시 점검해봐야 할 때</b>라는 점을 공유드립니다.
+    </div>
+  </div>
+
+  <div class="foot">
+    근거 — 자유 유저 이용 데이터 및 결제 데이터(2026.4~8월). 숫자는 반올림한 대략값이며, 실무용 상세 플랜(온보딩 시퀀스·정착·라우팅 기준)은 별도 문서로 관리합니다.
+  </div>
+
+</div>
+</body>
+</html>

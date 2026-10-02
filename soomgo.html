@@ -111,6 +111,29 @@ thead th.hl{background:var(--soom-tint);color:var(--soom-ink)}
 .stat .d{margin-top:4px;font-size:12.5px;color:var(--muted);line-height:1.5}
 .split{display:flex;height:10px;border-radius:5px;overflow:hidden;margin-top:10px}
 .split i{display:block}
+.price-tbl table{min-width:560px}
+.price-tbl .r{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.price-tbl tr.total th,.price-tbl tr.total td{border-top:1.5px solid var(--line);background:#FAFBFA}
+.price-tbl tr.total td.hl{background:var(--soom-tint)}
+.price-tbl s{color:var(--faint)}
+.off{display:inline-block;margin-left:6px;font-size:11.5px;font-weight:700;color:#fff;background:var(--soom);border-radius:6px;padding:1px 7px;vertical-align:2px}
+.offer{margin-top:12px;border:1px solid #D9CCFF;background:var(--soom-tint);border-radius:12px;padding:14px 18px;display:grid;gap:4px}
+.offer p{font-size:14.5px}
+.dense{margin-top:12px;display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.6fr);border:1px solid #D9CCFF;border-radius:14px;overflow:hidden;background:var(--paper)}
+.dense-main{background:var(--soom-tint);padding:22px 24px;display:flex;flex-direction:column;justify-content:center;gap:4px;min-width:0}
+.dense-num{font-size:44px;font-weight:700;letter-spacing:-.03em;color:var(--soom-ink);line-height:1.1;font-variant-numeric:tabular-nums}
+.dense-num small{font-size:20px;font-weight:600;margin-left:3px}
+.dense-main .d{font-size:12.5px;color:var(--muted)}
+.dense-side{padding:20px 24px;min-width:0}
+.dense-side .t{font-size:15px;font-weight:700;letter-spacing:-.01em}
+.touches{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.tk{font-size:11.5px;font-weight:700;border-radius:6px;padding:3px 9px}
+.tk.b{color:#fff;background:var(--soom)}
+.tk.v{color:var(--soom-ink);background:var(--soom-tint);border:1px solid #D9CCFF}
+.tk.part{opacity:.55}
+.dense-side ul{margin:12px 0 0;padding-left:18px;font-size:14px;line-height:1.6}
+.dense-side li{margin-bottom:6px} .dense-side li:last-child{margin-bottom:0}
+.dense-side li::marker{color:var(--faint)}
 .formula{margin-top:12px;font-size:13.5px;color:var(--muted);background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:13px 16px}
 .formula code{font-family:var(--f-body);font-weight:600;font-size:13px;color:var(--ink);background:#F2F4F3;border-radius:5px;padding:1px 6px}
 
@@ -139,6 +162,7 @@ thead th.hl{background:var(--soom-tint);color:var(--soom-ink)}
   .gal{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
 @media (max-width:620px){
+  .dense{grid-template-columns:minmax(0,1fr)}
   .sum{grid-template-columns:minmax(0,1fr)}
   .sum > div{border-left:none;border-top:1px solid var(--line-soft)} .sum > div:first-child{border-top:none}
   .why,.two{grid-template-columns:minmax(0,1fr)}
@@ -165,12 +189,12 @@ thead th.hl{background:var(--soom-tint);color:var(--soom-ink)}
     </div>
     <div>
       <div class="lbl">도달 대상</div>
-      <div class="v"><b>월 약 10만 건 주문, 의류 약 55만 벌</b><br>서울·수도권 고소득 직장인, 맞벌이, 1인가구. 집안일을 이미 돈을 내고 맡기는 고객층</div>
+      <div class="v"><b>월 약 12만 건 주문, 의류 약 70만 벌</b><br>서울·수도권 고소득 직장인, 맞벌이, 1인가구. 집안일을 이미 돈을 내고 맡기는 고객층</div>
     </div>
     <div>
-      <div class="lbl">패키지 금액 · 1개월</div>
-      <div class="price">1억 원<small>VAT 별도 · 의류 비닐 기준</small></div>
-      <div class="v" style="margin-top:4px;font-size:13.5px"><b style="color:var(--go)">옷걸이 배너는 POC로 무상 지원</b></div>
+      <div class="lbl">1호 광고 파트너 제안가 · 1개월</div>
+      <div class="price">1억 원<small>VAT 별도</small></div>
+      <div class="v" style="margin-top:4px;font-size:13.5px">정가 2억 원에서 <b style="color:var(--soom-ink)">50% 할인</b>, 옷걸이 배너 <b style="color:var(--go)">특별 무상 제공</b></div>
     </div>
   </div>
 
@@ -181,7 +205,7 @@ thead th.hl{background:var(--soom-tint);color:var(--soom-ink)}
     </div>
     <div class="hero-side">
       <div class="moment">
-        <h3>광고를 건너뛸 수 없는 30초</h3>
+        <h3>광고를 건너뛸 수 없는 순간</h3>
         <p>세탁물을 옷장에 옮기려면 배너가 걸린 옷걸이를 잡고, 숨고가 인쇄된 비닐을 벗겨야 합니다. 스크롤하거나 닫을 수 있는 화면 광고와 다른 점입니다.</p>
         <div class="touch">
           <div><span class="k">옷걸이 배너</span><span>옷걸이 목에 걸려 가장 먼저 보이는 면. 캠페인 메시지와 <b>숨고 첫 요청 쿠폰 QR</b> 탑재</span></div>
@@ -247,36 +271,58 @@ thead th.hl{background:var(--soom-tint);color:var(--soom-ink)}
   </section>
 
   <section>
-    <div class="sh"><h2>상품 구성</h2><span class="sub">유상 매체는 의류 비닐, 옷걸이 배너는 POC로 함께 제공</span></div>
+    <div class="sh"><h2>상품 구성</h2><span class="sub">1개월 집행 · 매월 출고되는 모든 주문과 의류에 적용</span></div>
     <div class="tbl spec">
       <table>
         <thead><tr><th>구성</th><th>내용</th><th>수량 · 기간</th></tr></thead>
         <tbody>
-          <tr><th>옷걸이 배너<br><span class="badge real" style="margin-top:4px">POC 무상</span></th><td>숨고 캠페인 메시지 + 런드리고 고객 전용 쿠폰 QR. 옷걸이 목에 거는 행거형. 제작비·매체비 런드리고 지원</td><td><b>약 10만 장</b><br>월 주문 약 10만 건 × 주문당 1장 · 1개월</td></tr>
-          <tr><th>의류 비닐<br><span class="badge mock" style="margin-top:4px">유상 1억 원</span></th><td>“집으로 사람 부를 땐, 숨고” 메시지 반복 인쇄. 모든 출고 의류에 적용</td><td><b>약 55만 장</b><br>월 출고 의류 약 55만 벌 · 1개월</td></tr>
+          <tr><th>의류 비닐</th><td>“집으로 사람 부를 땐, 숨고” 메시지 반복 인쇄. 모든 출고 의류에 적용</td><td><b>약 70만 장</b><br>월 출고 의류 약 70만 벌 · 1개월</td></tr>
+          <tr><th>옷걸이 배너</th><td>숨고 캠페인 메시지 + 런드리고 고객 전용 쿠폰 QR. 옷걸이 목에 거는 행거형</td><td><b>약 12만 개</b><br>월 주문 약 12만 건 × 주문당 1개 · 1개월</td></tr>
           <tr><th>앱 코프로모션 연계</th><td>배너 QR 혜택과 앱·CRM 혜택을 같은 메시지와 기간으로 맞춰 운영</td><td>10월 프로모션 기간과 동기화</td></tr>
           <tr><th>성과 리포트</th><td>QR 스캔, 쿠폰 발급·사용 데이터 정리 공유</td><td>공유 시점·항목은 추후 협의</td></tr>
-          <tr><th>패키지 금액</th><td colspan="2"><b style="color:var(--soom-ink)">1억 원 (VAT 별도)</b> · 의류 비닐 기준 = 비닐 제작비 3,000만 원 + 매체비 7,000만 원<br><span style="color:var(--go);font-weight:600">옷걸이 배너 제작비·매체비는 POC 개념으로 런드리고가 지원 (별도 비용 없음)</span></td></tr>
         </tbody>
       </table>
     </div>
-    <div class="stats">
-      <div class="stat"><div class="big">10만<small>건 / 월</small></div><div class="d">숨고 비닐·배너가 함께 배송되는 주문 수</div></div>
-      <div class="stat"><div class="big">5.5<small>벌 / 주문</small></div><div class="d">주문 1건에 함께 오는 숨고 비닐 수 (55만 벌 ÷ 10만 건)</div></div>
-      <div class="stat acc"><div class="big">1,000<small>원 / 주문</small></div><div class="d">주문 1건당 비닐 광고 비용, VAT 별도 (매체비만 보면 700원). 배너는 무상</div></div>
-      <div class="stat acc"><div class="big">약 182<small>원 / 벌</small></div><div class="d">비닐 1장당 비용, VAT 별도 (매체비만 보면 약 127원)</div></div>
+  </section>
+
+  <section>
+    <div class="sh"><h2>1호 광고 파트너 특별 조건</h2><span class="sub">총 금액 50% 할인 · 옷걸이 배너 특별 무상 제공</span></div>
+    <div class="tbl price-tbl">
+      <table>
+        <thead><tr><th>매체</th><th class="r">단가</th><th class="r">월 수량</th><th class="r">정가</th><th class="r hl">숨고 제안가</th></tr></thead>
+        <tbody>
+          <tr><th>의류 비닐</th><td class="r">200원 / 벌</td><td class="r">70만 벌</td><td class="r">1억 4,000만 원</td><td class="r hl"><b>1억 원</b></td></tr>
+          <tr><th>옷걸이 배너</th><td class="r">500원 / 개</td><td class="r">12만 개</td><td class="r">6,000만 원</td><td class="r hl"><b style="color:var(--go)">특별 무상 제공</b></td></tr>
+          <tr class="total"><th>합계</th><td class="r"></td><td class="r"></td><td class="r"><s>2억 원</s></td><td class="r hl"><b style="color:var(--soom-ink);font-size:17px">1억 원</b> <span class="off">50% D/C</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="dense">
+      <div class="dense-main">
+        <div class="lbl" style="color:var(--soom)">고객 1회 수령당 광고비</div>
+        <div class="dense-num">약 833<small>원</small></div>
+        <div class="d">제안가 1억 원 ÷ 월 주문 12만 건 · VAT 별도</div>
+      </div>
+      <div class="dense-side">
+        <div class="t">이 비용으로 한 고객이 한 번에 만나는 숨고</div>
+        <div class="touches" aria-label="옷걸이 배너 1개와 숨고 비닐 약 5.8장">
+          <span class="tk b">배너</span><span class="tk v">비닐</span><span class="tk v">비닐</span><span class="tk v">비닐</span><span class="tk v">비닐</span><span class="tk v">비닐</span><span class="tk v part">비닐</span>
+        </div>
+        <ul>
+          <li><b>한 번 수령에 약 6.8번 접촉</b> — 옷걸이 배너 1개 + 숨고 비닐 약 5.8장 (70만 벌 ÷ 12만 건)</li>
+          <li><b>지나가는 노출이 아니라 손으로 다루는 노출</b> — 배너가 걸린 옷걸이를 잡고, 비닐을 한 장씩 벗기며 옷장에 옮김</li>
+          <li><b>경쟁 광고 없는 집 안</b> — 같은 자리에 다른 광고가 함께 놓이지 않음</li>
+        </ul>
+      </div>
     </div>
     <div class="formula">
-      <b style="color:var(--ink)">비용 구성 · 1억 원 (VAT 별도, 의류 비닐 기준)</b>
-      <div class="split" aria-hidden="true"><i style="width:30%;background:#B9C4C1"></i><i style="width:70%;background:var(--soom)"></i></div>
-      <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:6px"><span>비닐 제작비 3,000만 원 (30%)</span><span style="color:var(--soom-ink);font-weight:600">매체비 7,000만 원 (70%)</span></div>
-      <div style="margin-top:8px">주문 수 기준입니다. 일부 고객은 월 2회 정도 주문하므로 실제 도달 가구 수는 10만의 약 60%(약 6만 가구) 수준이며, 그만큼 같은 가구에 반복 노출됩니다.</div>
+      금액은 모두 VAT 별도입니다. 주문 수 기준 수치이며, 일부 고객은 월 2회 정도 주문하므로 실제 도달 가구 수는 12만의 약 60%(약 7만 2천 가구) 수준이고, 그만큼 같은 가구에 반복 노출됩니다.
     </div>
   </section>
 
   <div class="foot">
     본 제안서의 이미지 중 ‘목업’ 표시 사진은 런드리고 실제 촬영 사진에 숨고 디자인 시안을 합성한 것으로, 실제 인쇄물의 크기·색감과 다를 수 있습니다.<br>
-    주문 수(월 약 10만 건)와 출고 의류 수(월 약 55만 벌)는 런드리고 월 평균 기준 추정치로, 집행 월에 따라 달라질 수 있습니다. 성과 리포트의 공유 시점·항목은 양사 추후 협의로 정합니다.
+    주문 수(월 약 12만 건)와 출고 의류 수(월 약 70만 벌)는 런드리고 월 평균 기준 추정치로, 집행 월에 따라 달라질 수 있습니다. 성과 리포트의 공유 시점·항목은 양사 추후 협의로 정합니다.
   </div>
 
 </div>

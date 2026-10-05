@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>런드리고 4Q26 실행 플랜 — 한 장 지도</title>
+<style>
+  :root{
+    --parchment:#f5f5f7; --ink:#1d1d1f; --ink-80:#3a3a3c; --ink-48:#7a7a7a;
+    --hairline:#e0e0e0; --divider:#f0f0f0;
+    --accent:#0066cc; --accent-l:rgba(0,102,204,0.07);
+    --acq:#0066cc; --act:#1d9e75; --fr:#9a6a11;
+    --acq-l:rgba(0,102,204,0.10); --act-l:rgba(29,158,117,0.11); --fr-l:rgba(154,106,17,0.11);
+  }
+  *,*::before,*::after{box-sizing:border-box;}
+  html,body{margin:0;}
+  body{font-family:"SF Pro Text",-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Pretendard',system-ui,sans-serif;
+       background:#fff; color:var(--ink); -webkit-font-smoothing:antialiased; line-height:1.5; font-size:15px;
+       word-break:keep-all; text-wrap:pretty;}
+  .wrap{max-width:1040px; margin:0 auto; padding:44px 32px 60px;}
+
+  header{margin-bottom:26px;}
+  .kicker{font-size:12.5px; color:var(--ink-48); margin-bottom:8px;}
+  h1{font-family:"SF Pro Display",-apple-system,system-ui,sans-serif; font-size:30px; font-weight:700; letter-spacing:-.03em; margin:0 0 10px; line-height:1.14;}
+  .lead{font-size:16px; color:var(--ink-80); max-width:70ch;}
+  .lead b{color:var(--ink);}
+
+  /* goal strip */
+  .goal{display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:var(--hairline); border:1px solid var(--hairline); border-radius:14px; overflow:hidden; margin:26px 0 20px;}
+  .goal .cell{background:#fff; padding:16px 20px; text-align:center;}
+  .goal .n{font-family:"SF Pro Display",system-ui,sans-serif; font-size:26px; font-weight:700; letter-spacing:-.02em;}
+  .goal .lab{font-size:12.5px; color:var(--ink-48); margin-top:3px;}
+
+  /* mini cumulative curve */
+  .curve{border:1px solid var(--hairline); border-radius:14px; padding:14px 18px 10px; margin-bottom:40px;}
+  .curve .ttl{font-size:13px; font-weight:700; margin-bottom:8px;}
+  .curve .ttl span{font-weight:400; color:var(--ink-48); font-size:12px;}
+  .curvesvg{width:100%; height:auto; display:block;}
+  .curvecap{font-size:12px; color:var(--ink-48); margin-top:8px; line-height:1.5;}
+  .curvecap b{color:var(--ink);}
+
+  .maplabel{font-family:"SF Pro Display",system-ui,sans-serif; font-size:21px; font-weight:700; letter-spacing:-.02em; margin:0 0 4px;}
+  .mapsub{font-size:14px; color:var(--ink-48); margin:0 0 22px;}
+
+  .statustag{display:inline-block; font-size:11.5px; font-weight:700; color:var(--accent); background:var(--accent-l); padding:3px 11px; border-radius:20px; margin-bottom:12px;}
+  .comp6{margin-bottom:26px;}
+  .c6title{font-size:13px; font-weight:700; margin-bottom:10px;}
+  .c6title span{font-weight:400; color:var(--ink-48); font-size:12px;}
+  .c6bar{display:flex; gap:3px; height:42px;}
+  .c6bar .seg{display:flex; align-items:center; justify-content:center; color:#fff; font-size:12px; font-weight:600; border-radius:7px; white-space:nowrap; overflow:hidden; min-width:0; padding:0 4px;}
+  .c6note{font-size:12px; color:var(--ink-48); margin-top:10px;} .c6note b{color:var(--ink);}
+  /* 3 buckets */
+  .buckets{display:flex; gap:4px; height:46px; margin-bottom:8px;}
+  .bk{border-radius:10px; display:flex; align-items:center; justify-content:center; gap:8px; color:#fff; font-size:13px; font-weight:600; white-space:nowrap; overflow:hidden; min-width:0;}
+  .bk b{font-size:17px; font-weight:700;}
+  .bk.b-free{background:#1668b8;} .bk.b-pass{background:#8a94a6; font-size:11px; padding:0 4px;} .bk.b-pass b{font-size:12px;} .bk.b-sub{background:#ef5d4c;}
+  .bknote{font-size:11.5px; color:var(--ink-48); margin-bottom:26px; line-height:1.5;} .bknote b{color:var(--ink-80);}
+  .grphead{font-size:13px; font-weight:700; color:var(--ink-80); margin:0 0 12px; display:flex; align-items:center; gap:8px;}
+  .grphead .gc{width:11px; height:11px; border-radius:3px;}
+  .grphead .gc.free{background:#1668b8;} .grphead .gc.conv{background:#607a94;}
+  .fbox.f-free{background:#5a9bd8;} .fbox.f-free2{background:#2f7cc4;} .fbox.f-free3{background:#0f4c8a;}
+  .fbox.f-dorm{background:#9aa0a6;} .fbox.f-pass{background:#607a94;} .fbox.f-sub{background:#c99a2e;}
+  /* ── the one-page map: funnel (left) + strategy (right) ── */
+  .map{position:relative;}
+  .stage{display:grid; grid-template-columns:270px 1fr; gap:20px; align-items:stretch; margin-bottom:14px; position:relative;}
+  /* left funnel tile — width tapers by stage */
+  .fbox{color:#fff; border-radius:14px; padding:16px 18px; display:flex; flex-direction:column; justify-content:center; min-height:96px;}
+  .fbox .fstep{font-size:11.5px; font-weight:700; opacity:.85; letter-spacing:.02em;}
+  .fbox .fname{font-family:"SF Pro Display",system-ui,sans-serif; font-size:19px; font-weight:700; letter-spacing:-.01em; margin:2px 0 2px;}
+  .fbox .fpct{font-size:12.5px; opacity:.9;}
+  .fbox .fpct .real{color:#bff0dc;} .fbox .fpct .dum{color:#ffcdb8;}
+  .fbox.f1{background:#0f4c8a;} .fbox.f2{background:#1668b8;} .fbox.f3{background:#2f86d6;} .fbox.f4{background:#2a2a2c;}
+  /* connector arrow between stages */
+  .stage.no-arrow .fbox::after{content:none;}
+  .stage:not(:last-child):not(.no-arrow) .fbox::after{content:"↓"; position:absolute; left:135px; bottom:-15px; transform:translateX(-50%); color:var(--ink-48); font-size:15px; font-weight:700; z-index:2;}
+
+  /* right strategy */
+  .sbox{border:1px solid var(--hairline); border-radius:14px; padding:15px 18px; display:flex; flex-direction:column; justify-content:center;}
+  .sbox .goalq{font-size:13px; font-weight:700; color:var(--accent); margin-bottom:8px;}
+  .plan{display:flex; flex-direction:column; gap:9px;}
+  .plan .item{display:flex; gap:9px; align-items:flex-start; font-size:14px; color:var(--ink-80); line-height:1.45;}
+  .plan .item b{color:var(--ink);}
+  .tag{flex-shrink:0; font-size:10.5px; font-weight:700; padding:2px 9px; border-radius:20px; margin-top:1px; white-space:nowrap;}
+  .tag.acq{background:var(--acq-l); color:var(--acq);} .tag.act{background:var(--act-l); color:var(--act);} .tag.fr{background:var(--fr-l); color:var(--fr);}
+  .newb{display:inline-block; font-size:9.5px; font-weight:700; color:#fff; background:#d85a30; padding:1px 6px; border-radius:4px; margin-left:3px; vertical-align:middle;}
+  .refline{font-size:11.5px; color:var(--ink-48); margin-top:9px; padding-top:8px; border-top:1px dashed var(--hairline);}
+  .refline a, .refline .lk{color:var(--accent); font-weight:600; text-decoration:none;}
+
+  /* legend row */
+  .leg{display:flex; flex-wrap:wrap; gap:8px 18px; margin:26px 0 0; font-size:12px; color:var(--ink-80);}
+  .leg .li{display:flex; align-items:center; gap:6px;}
+  .leg .d{width:12px; height:12px; border-radius:3px;}
+
+  .foot{font-size:11.5px; color:var(--ink-48); margin-top:30px; padding-top:16px; border-top:1px solid var(--hairline); line-height:1.6;}
+
+  .fpct .to{color:#8fd0ff; font-weight:700;}
+  .item.gap{border-top:1px dashed var(--hairline); margin-top:4px; padding-top:9px;}
+  .tag.gap{background:rgba(216,90,48,.11); color:#d85a30;}
+  .item.gap div{color:var(--ink-48);} .item.gap div b{color:var(--ink-80);}
+  .fgoal{margin-top:8px; font-size:12px; font-weight:600; background:rgba(255,255,255,.16); border-radius:7px; padding:4px 10px; display:inline-block;}
+  .fgoal b{font-size:15px; font-weight:700;}
+  .bridge{margin-top:30px; border:1px solid var(--hairline); border-radius:14px; padding:18px 20px;}
+  .btitle{font-family:"SF Pro Display",system-ui,sans-serif; font-size:17px; font-weight:700; letter-spacing:-.01em; margin-bottom:12px;}
+  .btitle span{font-weight:400; font-size:13px; color:var(--ink-48);}
+  .brtbl{width:100%; border-collapse:collapse; font-size:13.5px;}
+  .brtbl th,.brtbl td{padding:9px 12px; border-bottom:1px solid var(--divider); text-align:left; white-space:nowrap;}
+  .brtbl thead th{font-size:12px; font-weight:700; color:var(--ink-48); border-bottom:1.5px solid var(--ink);}
+  .brtbl .num{text-align:right; font-variant-numeric:tabular-nums;}
+  .brtbl .riserow td{border-top:none; padding-top:2px; font-weight:700; font-size:12px;}
+  .brtbl .up{color:#1d9e75;} .brtbl .dn{color:#d85a30;}
+  .brtbl tfoot td{border-top:1.5px solid var(--ink); border-bottom:none; font-weight:700; padding-top:11px;}
+  .brtbl tfoot tr.pctrow td{border-top:none; padding-top:2px; font-weight:400; color:var(--ink-48); font-size:12px;}
+  .brnote{font-size:12px; color:var(--ink-48); margin-top:14px; line-height:1.65;}
+  .brnote b{color:var(--ink-80);}
+  /* expandable detail */
+  .detail{margin-top:10px; border-top:1px dashed var(--hairline); padding-top:9px;}
+  .detail summary{font-size:12px; color:var(--accent); font-weight:600; cursor:pointer; list-style:none; user-select:none;}
+  .detail summary::-webkit-details-marker{display:none;}
+  .detail summary::before{content:"▸ "; font-size:10px;}
+  .detail[open] summary::before{content:"▾ ";}
+  .dsub{font-size:12px; font-weight:700; color:var(--accent); margin-bottom:8px;}
+  .dpanel{margin-top:10px; padding:13px 15px; background:var(--parchment); border-radius:10px;}
+  .miniflow{display:flex; flex-wrap:wrap; align-items:center; gap:6px;}
+  .mstep{font-size:11.5px; background:#fff; border:1px solid var(--hairline); border-radius:8px; padding:6px 9px; line-height:1.35; text-align:center;}
+  .mstep small{color:var(--ink-48); font-size:10px;}
+  .mstep.hl{border-color:var(--accent); color:var(--accent); font-weight:600;}
+  .mstep.goal{background:var(--act); color:#fff; border-color:var(--act); font-weight:700;}
+  .marr{color:var(--ink-48); font-weight:700;}
+  .seqmap{margin-top:4px;}
+  .sm-left{display:flex; align-items:center; gap:8px; flex-wrap:wrap;}
+  .packbox{border:1.5px solid var(--accent); border-radius:10px; padding:10px 12px; min-width:230px; background:#fff;}
+  .packttl{font-size:12px; font-weight:700; color:var(--accent); margin-bottom:7px;}
+  .packttl small{font-weight:400; color:var(--ink-48); font-size:10.5px;}
+  .packrow{display:flex; align-items:center; gap:7px; font-size:12px; color:var(--ink-80); padding:3px 0;}
+  .packrow+.packrow{border-top:1px solid var(--divider);}
+  .packrow b{color:var(--ink);}
+  .cpn{font-size:11px; font-weight:700; padding:2px 8px; border-radius:6px; white-space:nowrap; min-width:72px; text-align:center;}
+  .cpn.free{background:rgba(96,122,148,.15); color:#4a5a6e;}
+  .cpn.disc{background:rgba(201,154,46,.16); color:#8a6410;}
+  .cpn.bed{background:rgba(217,144,54,.14); color:#a06a1e;}
+  .marr.sm{font-size:11px;}
+  .seqnote{font-size:11.5px; color:var(--ink-48); margin-top:10px; padding-top:8px; border-top:1px dashed var(--hairline);}
+  .minibranch .bq{font-size:12px; font-weight:700; margin-bottom:8px;}
+  .brow{display:flex; align-items:center; gap:8px; font-size:12.5px; color:var(--ink-80); padding:4px 0;}
+  .brow+.brow{border-top:1px solid var(--divider);}
+  .bk{background:#fff; border:1px solid var(--hairline); border-radius:6px; padding:2px 9px; font-size:11.5px; white-space:nowrap;}
+  .barr{color:var(--ink-48); font-weight:700;} .brow b{color:var(--ink);}
+  .minigate .gq{font-size:12.5px; color:var(--ink-80); padding:3px 0;}
+  .minigate .gq b{color:var(--ink);} .minigate .gq span{color:var(--ink-48);}
+  .grow{font-size:12.5px; color:var(--ink-80); padding:5px 0; border-top:1px solid var(--divider); margin-top:4px;}
+  .grow b.sub{color:#8a6410;} .grow b.pass{color:#4a5a6e;}
+  .gyes,.gno{font-weight:600;} .gsz{color:var(--ink-48); font-size:11px;}
+  .gfb{margin-top:8px; font-size:11.5px; color:var(--accent); font-weight:600;}
+  /* weekly target table */
+  .wtbl{width:100%; border-collapse:collapse; font-size:13px;}
+  .wtbl th,.wtbl td{padding:8px 10px; border-bottom:1px solid var(--divider); text-align:left; white-space:nowrap;}
+  .wtbl thead th{font-size:11.5px; font-weight:700; color:var(--ink-48); border-bottom:1.5px solid var(--ink);}
+  .wtbl .num{text-align:right; font-variant-numeric:tabular-nums;}
+  .wtbl .cum{color:var(--ink-48);}
+  .wtbl .mon{font-weight:700; color:var(--ink-80); font-size:12px;}
+  .wtbl .wk{font-weight:700;}
+  .wtbl .pd{color:var(--ink-48); font-size:12px;}
+  .wtbl .pt{color:var(--dn); font-size:10.5px;}
+  .wtbl .pct{color:var(--ink-80);}
+  .wtbl .pbar{display:inline-block; width:46px; height:5px; border-radius:3px; background:var(--divider); margin-right:7px; vertical-align:middle; overflow:hidden;}
+  .wtbl .pbar span{display:block; height:100%; background:var(--accent); border-radius:3px;}
+  .wtbl tfoot td{border-top:1.5px solid var(--ink); border-bottom:none; font-weight:700; padding-top:10px;}
+  .wtbl tbody tr:hover{background:var(--parchment);}
+  /* monthly cohort chart */
+  .cohort{border:1px solid var(--hairline); border-radius:14px; padding:16px 18px 10px; margin-bottom:34px;}
+  .cohort .ct{font-size:13px; font-weight:700; margin-bottom:4px;}
+  .cohort .cs{font-size:12.5px; color:var(--ink-48); margin-bottom:10px;}
+  .cohortsvg{width:100%; height:auto; display:block;}
+  .barg .hit{cursor:pointer;}
+  .cohortsvg:hover .barg rect{opacity:.38; transition:opacity .12s;}
+  .cohortsvg .barg:hover rect{opacity:1;}
+  .clegend{display:flex; flex-wrap:wrap; gap:8px 18px; margin-top:10px; padding-top:10px; border-top:1px solid var(--divider); font-size:12px; color:var(--ink-80);}
+  .clegend .li{display:flex; align-items:center; gap:6px;} .clegend .sw{width:12px; height:12px; border-radius:3px;}
+  .cohortnote{font-size:11.5px; color:var(--ink-48); margin-top:10px; line-height:1.5;}
+  @media (max-width:720px){
+    .goal{grid-template-columns:1fr;}
+    .stage{grid-template-columns:1fr;}
+    .stage.no-arrow .fbox::after{content:none;}
+  .stage:not(:last-child):not(.no-arrow) .fbox::after{left:50%; bottom:-14px;}
+    .fbox{min-height:auto;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="kicker">런드리고 · 2026년 4분기 실행 플랜 · 한 장 요약</div>
+    <h1>4분기 주문을 어디서, 어떻게 만들까</h1>
+    <div class="lead">분기 주문 목표를 <b>네 종류</b>로 나누고, 각각을 <b>무엇으로 키울지</b> 한 장에 담았습니다. 새 손님을 늘리고 → 다시 오게 만들고 → 단골로 붙잡는 흐름입니다.</div>
+  </header>
+
+
+
+  
+
+  <!-- GOAL -->
+  <div class="goal">
+    <div class="cell"><div class="n">314,426건</div><div class="lab">분기 주문 목표 (Best)</div></div>
+    <div class="cell"><div class="n">114억 원</div><div class="lab">분기 매출 목표 (Best)</div></div>
+    <div class="cell"><div class="n">13주</div><div class="lab">매주 목표 대비 추적</div></div>
+  </div>
+
+  <!-- MINI CURVE -->
+  <div class="curve">
+    <div class="ttl">주간 목표 <span>· 매주 이 숫자 대비 실적을 추적 (Best 기준)</span></div>
+    <table class="wtbl">
+      <thead><tr><th>월</th><th>주차</th><th>기간</th><th class="num">주간 목표</th><th class="num">누적</th><th>진도율</th></tr></thead>
+      <tbody><tr><td class="mon">10월</td><td class="wk">W1</td><td class="pd">9/28~10/4 <span class="pt">·부분</span></td><td class="num">15,146</td><td class="num cum">15,146</td><td class="pct"><span class="pbar"><span style="width:5%"></span></span>5%</td></tr><tr><td class="mon"></td><td class="wk">W2</td><td class="pd">10/5~11</td><td class="num">24,571</td><td class="num cum">39,717</td><td class="pct"><span class="pbar"><span style="width:13%"></span></span>13%</td></tr><tr><td class="mon"></td><td class="wk">W3</td><td class="pd">10/12~18</td><td class="num">23,656</td><td class="num cum">63,373</td><td class="pct"><span class="pbar"><span style="width:20%"></span></span>20%</td></tr><tr><td class="mon"></td><td class="wk">W4</td><td class="pd">10/19~25</td><td class="num">23,403</td><td class="num cum">86,776</td><td class="pct"><span class="pbar"><span style="width:28%"></span></span>28%</td></tr><tr><td class="mon"></td><td class="wk">W5</td><td class="pd">10/26~11/1</td><td class="num">23,586</td><td class="num cum">110,362</td><td class="pct"><span class="pbar"><span style="width:35%"></span></span>35%</td></tr><tr><td class="mon">11월</td><td class="wk">W6</td><td class="pd">11/2~8</td><td class="num">24,949</td><td class="num cum">135,311</td><td class="pct"><span class="pbar"><span style="width:43%"></span></span>43%</td></tr><tr><td class="mon"></td><td class="wk">W7</td><td class="pd">11/9~15</td><td class="num">24,674</td><td class="num cum">159,985</td><td class="pct"><span class="pbar"><span style="width:51%"></span></span>51%</td></tr><tr><td class="mon"></td><td class="wk">W8</td><td class="pd">11/16~22</td><td class="num">24,399</td><td class="num cum">184,384</td><td class="pct"><span class="pbar"><span style="width:59%"></span></span>59%</td></tr><tr><td class="mon"></td><td class="wk">W9</td><td class="pd">11/23~29</td><td class="num">24,123</td><td class="num cum">208,507</td><td class="pct"><span class="pbar"><span style="width:66%"></span></span>66%</td></tr><tr><td class="mon">12월</td><td class="wk">W10</td><td class="pd">11/30~12/6</td><td class="num">24,604</td><td class="num cum">233,111</td><td class="pct"><span class="pbar"><span style="width:74%"></span></span>74%</td></tr><tr><td class="mon"></td><td class="wk">W11</td><td class="pd">12/7~13</td><td class="num">24,438</td><td class="num cum">257,548</td><td class="pct"><span class="pbar"><span style="width:82%"></span></span>82%</td></tr><tr><td class="mon"></td><td class="wk">W12</td><td class="pd">12/14~20</td><td class="num">24,152</td><td class="num cum">281,700</td><td class="pct"><span class="pbar"><span style="width:90%"></span></span>90%</td></tr><tr><td class="mon"></td><td class="wk">W13</td><td class="pd">12/21~27</td><td class="num">21,274</td><td class="num cum">302,975</td><td class="pct"><span class="pbar"><span style="width:96%"></span></span>96%</td></tr><tr><td class="mon"></td><td class="wk">W14</td><td class="pd">12/28~1/3 <span class="pt">·부분</span></td><td class="num">11,451</td><td class="num cum">314,426</td><td class="pct"><span class="pbar"><span style="width:100%"></span></span>100%</td></tr></tbody>
+      <tfoot><tr><td></td><td></td><td>분기 합계</td><td class="num"><b>314,426</b></td><td class="num">—</td><td>100%</td></tr></tfoot>
+    </table>
+    <div class="curvecap"><b>주마다 약 2.4만 건.</b> W1·W14는 4일짜리 부분 주간(연휴·연말). 10월에 들어온 새 손님이 11·12월 2·3회차로 이어지며 뒤로 갈수록 힘이 붙습니다.</div>
+  </div>
+
+  <!-- ── ONE-PAGE MAP ── -->
+  <div class="maplabel">주문을 2덩이로, 자유는 4단으로 나눠 키운다</div>
+  <div class="mapsub">크게 <b>자유 · 구독</b>. 자유 안은 첫주문 → 온보딩 → 활성, 그리고 <b>휴면</b>(별도 풀). 성장이 필요할 땐 볼륨 큰 곳(휴면)을 건드린다.</div>
+
+  <div class="comp6">
+    <div class="c6title">현황 · 최근 6개월 실측 구성비 <span>(2026.03~08)</span></div>
+    <div class="c6bar">
+      <div class="seg" style="flex:7.2; background:#5a9bd8;">첫주문 7.2%</div>
+      <div class="seg" style="flex:7.8; background:#2f7cc4;">온보딩 7.8%</div>
+      <div class="seg" style="flex:38.9; background:#0f4c8a;">자유 4회+ 38.9%</div>
+      <div class="seg" style="flex:46.2; background:#c99a2e;">구독 46.2%</div>
+    </div>
+    <div class="c6note"><b>자유 53.8%</b>(첫주문·온보딩·4회+) &nbsp;·&nbsp; <b>구독 46.2%</b> &nbsp;·&nbsp; 패스는 9/30 런칭이라 과거엔 자유에 포함.</div>
+  </div>
+
+  <div class="map">
+    <div class="grphead"><span class="gc free"></span>자유 — 주문의 53.8%를 4단으로</div>
+      <div class="stage">
+        <div class="fbox f-free">
+          <div class="fstep">자유 · 새 손님</div><div class="fname">첫 주문</div>
+          <div class="fpct">자유의 <b>13.4%</b> · 전체 7.2%</div><div class="fgoal">Q4 목표 42,330건</div>
+        </div>
+        <div class="sbox">
+          <div class="goalq">처음 오는 손님을 늘린다</div>
+          <div class="plan"><div class="item"><span class="tag acq">획득</span><div><b>첫 세탁 0원</b> — 첫 이용 공짜로 신규 유치</div></div><div class="item"><span class="tag act">활성</span><div><b>앱인토스</b><span class='newb'>10/8</span> — 토스 앱에서 <b>별도 가입 절차 없이</b> 바로 주문</div></div><div class="item gap"><span class="tag gap">추가 필요</span><div><b>바이럴·콘텐츠·PPL</b> 채널 다변화 및 <b>오가닉 성장 전략</b> 수립</div></div></div>
+        </div>
+      </div>
+      <div class="stage">
+        <div class="fbox f-free2">
+          <div class="fstep">자유 · 다시 오게</div><div class="fname">온보딩 (2·3회차)</div>
+          <div class="fpct">자유의 <b>14.5%</b> · 전체 7.8%</div><div class="fgoal">Q4 목표 27,040건</div>
+        </div>
+        <div class="sbox">
+          <div class="goalq">첫 손님을 단골 직전까지</div>
+          <div class="plan"><div class="item"><span class="tag act">활성</span><div><b>쿠폰팩 3종</b>을 한 번에 주고 골라 쓰게 (14일, 안 오면 14일 더)</div></div><div class="item"><span class="tag act">활성</span><div><b>정착</b> — 고른 쿠폰에 맞춰 다음 제안</div></div><div class="item gap"><span class="tag gap">추가 필요</span><div>전환율 <b>추가 상향</b> — 세그별 메시지·타이밍</div></div></div>
+          <details class="detail"><summary>상세 — 온보딩 시퀀스 (2회차 → 3회차)</summary>
+          <div class="dpanel">
+            <div class="dsub">2회차 만들기 → 어떤 쿠폰을 고르냐에 따라 3회차 제안이 갈린다</div>
+            <div class="seqmap">
+              <div class="sm-left">
+                <span class="mstep">첫 세탁<br>완료</span>
+                <span class="marr">→</span>
+                <div class="packbox">
+                  <div class="packttl">쿠폰팩 3종 <small>14일 · 미전환 시 14일 재발급</small></div>
+                  <div class="packrow"><span class="cpn free">무료배송</span><span class="marr sm">→</span><b>런드리고패스</b> 제안</div>
+                  <div class="packrow"><span class="cpn disc">전품목 20%</span><span class="marr sm">→</span><b>구독</b>(상시 20% 할인) 제안</div>
+                  <div class="packrow"><span class="cpn bed">이불 50%</span><span class="marr sm">→</span><b>시즌·품목</b> 리마인드</div>
+                </div>
+                <span class="marr">→</span>
+                <span class="mstep goal">2·3회차</span>
+              </div>
+              <div class="seqnote">유저가 고른 쿠폰 = 취향 신호 → 3회차엔 그 신호에 맞는 다음 제안</div>
+            </div>
+          </div></details>
+        </div>
+      </div>
+      <div class="stage no-arrow">
+        <div class="fbox f-free3">
+          <div class="fstep">자유 · 반복 이용</div><div class="fname">활성 (4회+)</div>
+          <div class="fpct">자유의 <b>72.3%</b> · 전체 38.9%</div>
+        </div>
+        <div class="sbox">
+          <div class="goalq">더 자주 맡기게 → 패스·구독으로 승격</div>
+          <div class="plan"><div class="item"><span class="tag fr">빈도·유지</span><div>자주 오는 활성 단골 — 주문 빈도↑ 유도</div></div><div class="item"><span class="tag fr">빈도·유지</span><div>볼륨에 따라 <b>패스·구독으로 전환</b>(아래)</div></div></div>
+        </div>
+      </div>
+      <div class="stage no-arrow">
+        <div class="fbox f-dorm">
+          <div class="fstep">★ 최대 볼륨</div><div class="fname">휴면</div>
+          <div class="fpct">유저 <b>16.8만 명</b> (자유의 71% · <b>최근 90일 무주문</b>) · 주문 ≈ 0</div>
+        </div>
+        <div class="sbox">
+          <div class="goalq">깨워서 다시 주문하게 — 가장 큰 성장 레버</div>
+          <div class="plan"><div class="item"><span class="tag act">활성</span><div><b>세그먼트·퍼널별 윈백 CRM</b> — 미이용 기간·과거 패턴별 맞춤</div></div><div class="item"><span class="tag act">활성</span><div><b>재유입 오퍼</b>로 첫 재주문 유도 → 온보딩으로 재합류</div></div><div class="item gap"><span class="tag gap">추가 필요</span><div>볼륨이 가장 크므로 <b>지속적으로 건드린다</b> — 큰 성장엔 큰 풀부터</div></div></div>
+        </div>
+      </div>
+    <div class="grphead" style="margin-top:18px;"><span class="gc conv"></span>패스 · 구독 — 자유에서 전환돼 나오는 주문</div>
+      <div class="stage no-arrow">
+        <div class="fbox f-pass">
+          <div class="fstep">전환 상품 · 신규</div><div class="fname">런드리고패스</div>
+          <div class="fpct">Q4 목표 <b>5,000명</b> 가입 (9/30 런칭)</div>
+        </div>
+        <div class="sbox">
+          <div class="goalq">자유 활성·온보딩 → 패스로 전환</div>
+          <div class="plan"><div class="item"><span class="tag fr">빈도·유지</span><div><b>소량·반복</b> 손님의 배송비 허들 제거</div></div><div class="item"><span class="tag fr">빈도·유지</span><div>전환 후 <b>주문 빈도↑</b> (장기 리텐션 자산)</div></div></div>
+          <details class="detail"><summary>상세 — 라우팅 (패스)</summary>
+          <div class="dpanel"><div class="minigate">
+            <div class="gq">최근 활성 &amp; <b>월 총지출 &lt; 4만원</b> (소량·반복)</div>
+            <div class="grow">→ <b class="pass">런드리고패스</b> <span class="gsz">배송비 허들 제거 · 월 0.76회+면 이득</span></div>
+          </div></div></details>
+        </div>
+      </div>
+      <div class="stage">
+        <div class="fbox f-sub">
+          <div class="fstep">고볼륨</div><div class="fname">구독</div>
+          <div class="fpct">주문의 <b>46.2%</b></div>
+        </div>
+        <div class="sbox">
+          <div class="goalq">자유 고볼륨 → 구독 전환 + 오래 붙잡기</div>
+          <div class="plan"><div class="item"><span class="tag fr">빈도·유지</span><div><b>월 총지출 큰</b> 손님 → 월정액이 이득 (상시 20% 할인)</div></div><div class="item"><span class="tag fr">빈도·유지</span><div><b>플러스구독</b> — 3·6·12개월 선결제 약정으로 오래</div></div></div>
+          <details class="detail"><summary>상세 — 라우팅 (구독)</summary>
+          <div class="dpanel"><div class="minigate">
+            <div class="gq">최근 활성 &amp; <b>월 총지출 ≥ 4만원</b> (고볼륨)</div>
+            <div class="grow">→ <b class="sub">구독</b> 제안</div>
+            <div class="grow"><span class="gno">구독을 2번 이상 권해도 안 하면</span> → 부담 적은 <b class="pass">런드리고패스</b>로 대신 제안</div>
+          </div></div></details>
+        </div>
+      </div>
+  </div>
+
+  <div class="leg">
+    <div class="li"><span class="d" style="background:var(--acq);"></span>획득 = 새 손님</div>
+    <div class="li"><span class="d" style="background:var(--act);"></span>활성 = 다시 오게</div>
+    <div class="li"><span class="d" style="background:var(--fr);"></span>빈도·유지 = 단골</div>
+  </div>
+
+  <div class="bridge">
+    <div class="btitle">주문 브릿지 — 월별 목표 쪼개기 <span>(Best 314,426 기준)</span></div>
+    <table class="brtbl">
+      <thead><tr><th>세그먼트</th><th class="num">10월</th><th class="num">11월</th><th class="num">12월</th><th class="num">Q4 합계</th><th class="num">비중</th></tr></thead>
+      <tbody>
+        <tr><td><span class="segdot" style="background:#5a9bd8"></span>첫주문</td><td class="num">13,430</td><td class="num">17,340</td><td class="num">11,560</td><td class="num"><b>42,330</b></td><td class="num">13.5%</td></tr>
+        <tr><td><span class="segdot" style="background:#2f7cc4"></span>온보딩(2·3회차)</td><td class="num">9,035</td><td class="num">9,176</td><td class="num">8,829</td><td class="num"><b>27,040</b></td><td class="num">8.6%</td></tr>
+        <tr><td><span class="segdot" style="background:#0f4c8a"></span>자유 활성(4회+)</td><td class="num">38,137</td><td class="num">34,449</td><td class="num">26,937</td><td class="num"><b>99,523</b></td><td class="num">31.7%</td></tr>
+        <tr><td><span class="segdot" style="background:#607a94"></span>런드리고패스</td><td class="num">1,500</td><td class="num">3,500</td><td class="num">5,000</td><td class="num"><b>10,000</b></td><td class="num">3.2%</td></tr>
+        <tr><td><span class="segdot" style="background:#c99a2e"></span>구독</td><td class="num">42,958</td><td class="num">42,235</td><td class="num">50,340</td><td class="num"><b>135,533</b></td><td class="num">43.1%</td></tr>
+      </tbody>
+      <tfoot>
+        <tr><td>Q4 목표 합계</td><td class="num">105,060</td><td class="num">106,700</td><td class="num">102,666</td><td class="num"><b>314,426</b></td><td class="num">100%</td></tr>
+        <tr class="pctrow"><td>2025 실적</td><td class="num">95,509</td><td class="num">106,229</td><td class="num">93,333</td><td class="num">295,071</td><td class="num">—</td></tr>
+        <tr class="riserow"><td>상승률</td><td class="num up">+10.0%</td><td class="num up">+0.4%<sup>*</sup></td><td class="num up">+10.0%</td><td class="num up">+6.6%</td><td class="num">—</td></tr>
+      </tfoot>
+    </table>
+    <div class="brnote">· <b>첫주문</b> 기존 대비 +70% · <b>온보딩(2·3)</b> 개선목표(5.0·3.6%) · <b>자유 활성</b> = 작년 수준 유지(휴면 깨우기 포함) · <b>런드리고패스</b> = 누적 가입자 각 1회+ 수거(10/11/12 누적 1,500/3,500/5,000) · <b>구독</b> = 작년 수준 유지(플랫).<br>· <b>휴면 깨우기(최대 레버)는 별도 행이 아니라 자유 활성 목표 안에 포함</b> — 깨운 유저는 자유 활성으로 주문. <b>[자유 활성 + 패스]는 작년 대비 +2.2%</b>로 반복 풀이 성장. (<sup>*</sup>11월 +0.4%는 2025년 11월에 이효리 효과로 실적이 106,229까지 튄 이상치 때문 — 그 외 월은 +10%)</div>
+  </div>
+
+  <div class="foot">
+    Best 목표 기준 · 「런드리고 4Q26 주간 주문수 목표」(2026-09-30). 구성비(자유 첫주문 7.2% / 온보딩 7.8% / 자유 4회+ 38.9% / 구독 46.2%)는 최근 6개월(2026.03~08) 평균 실측. 휴면 유저 16.8만은 자유 유저 90일 무주문 기준. 상세 실행안은 신규 온보딩 &amp; 세그 라우팅 플랜 문서 참조.
+  </div>
+
+</div>
+</body>
+</html>

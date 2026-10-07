@@ -99,6 +99,7 @@
   .item.gap div{color:var(--ink-48);} .item.gap div b{color:var(--ink-80);}
   .fgoal{margin-top:8px; font-size:12px; font-weight:600; background:rgba(255,255,255,.16); border-radius:7px; padding:4px 10px; display:inline-block;}
   .fgoal b{font-size:15px; font-weight:700;}
+  .fgoal .yy{font-size:11px; font-weight:600; opacity:.85; margin-left:4px;}
   .bridge{margin-top:30px; border:1px solid var(--hairline); border-radius:14px; padding:18px 20px;}
   .btitle{font-family:"SF Pro Display",system-ui,sans-serif; font-size:17px; font-weight:700; letter-spacing:-.01em; margin-bottom:12px;}
   .btitle span{font-weight:400; font-size:13px; color:var(--ink-48);}
@@ -111,6 +112,9 @@
   .brtbl tfoot td{border-top:1.5px solid var(--ink); border-bottom:none; font-weight:700; padding-top:11px;}
   .brtbl tfoot tr.pctrow td{border-top:none; padding-top:2px; font-weight:400; color:var(--ink-48); font-size:12px;}
   .brnote{font-size:12px; color:var(--ink-48); margin-top:14px; line-height:1.65;}
+  .ctxbox{margin-top:14px; display:flex; flex-direction:column; gap:7px;}
+  .ctxrow{font-size:12.5px; color:var(--ink-80); line-height:1.55; background:#faf7f2; border:1px solid #ece4d6; border-left:3px solid #c99a2e; border-radius:8px; padding:9px 12px; word-break:keep-all;}
+  .ctxk{font-weight:700; margin-right:6px;}
   .brnote b{color:var(--ink-80);}
   /* expandable detail */
   .detail{margin-top:10px; border-top:1px dashed var(--hairline); padding-top:9px;}
@@ -166,6 +170,10 @@
   .wtbl .pbar span{display:block; height:100%; background:var(--accent); border-radius:3px;}
   .wtbl tfoot td{border-top:1.5px solid var(--ink); border-bottom:none; font-weight:700; padding-top:10px;}
   .wtbl tbody tr:hover{background:var(--parchment);}
+  .wtbl .a25{color:var(--ink-48);}
+  .wtbl .up{color:#1d9e75; font-weight:600;} .wtbl .dn{color:#d85a30; font-weight:600;}
+  .wtbl .wkflag{font-size:10px; color:var(--ink-48); background:var(--divider); padding:1px 5px; border-radius:4px;}
+
   /* monthly cohort chart */
   .cohort{border:1px solid var(--hairline); border-radius:14px; padding:16px 18px 10px; margin-bottom:34px;}
   .cohort .ct{font-size:13px; font-weight:700; margin-bottom:4px;}
@@ -210,11 +218,11 @@
   <div class="curve">
     <div class="ttl">주간 목표 <span>· 매주 이 숫자 대비 실적을 추적 (Best 기준)</span></div>
     <table class="wtbl">
-      <thead><tr><th>월</th><th>주차</th><th>기간</th><th class="num">주간 목표</th><th class="num">누적</th><th>진도율</th></tr></thead>
-      <tbody><tr><td class="mon">10월</td><td class="wk">W1</td><td class="pd">9/28~10/4 <span class="pt">·부분</span></td><td class="num">15,146</td><td class="num cum">15,146</td><td class="pct"><span class="pbar"><span style="width:5%"></span></span>5%</td></tr><tr><td class="mon"></td><td class="wk">W2</td><td class="pd">10/5~11</td><td class="num">24,571</td><td class="num cum">39,717</td><td class="pct"><span class="pbar"><span style="width:13%"></span></span>13%</td></tr><tr><td class="mon"></td><td class="wk">W3</td><td class="pd">10/12~18</td><td class="num">23,656</td><td class="num cum">63,373</td><td class="pct"><span class="pbar"><span style="width:20%"></span></span>20%</td></tr><tr><td class="mon"></td><td class="wk">W4</td><td class="pd">10/19~25</td><td class="num">23,403</td><td class="num cum">86,776</td><td class="pct"><span class="pbar"><span style="width:28%"></span></span>28%</td></tr><tr><td class="mon"></td><td class="wk">W5</td><td class="pd">10/26~11/1</td><td class="num">23,586</td><td class="num cum">110,362</td><td class="pct"><span class="pbar"><span style="width:35%"></span></span>35%</td></tr><tr><td class="mon">11월</td><td class="wk">W6</td><td class="pd">11/2~8</td><td class="num">24,949</td><td class="num cum">135,311</td><td class="pct"><span class="pbar"><span style="width:43%"></span></span>43%</td></tr><tr><td class="mon"></td><td class="wk">W7</td><td class="pd">11/9~15</td><td class="num">24,674</td><td class="num cum">159,985</td><td class="pct"><span class="pbar"><span style="width:51%"></span></span>51%</td></tr><tr><td class="mon"></td><td class="wk">W8</td><td class="pd">11/16~22</td><td class="num">24,399</td><td class="num cum">184,384</td><td class="pct"><span class="pbar"><span style="width:59%"></span></span>59%</td></tr><tr><td class="mon"></td><td class="wk">W9</td><td class="pd">11/23~29</td><td class="num">24,123</td><td class="num cum">208,507</td><td class="pct"><span class="pbar"><span style="width:66%"></span></span>66%</td></tr><tr><td class="mon">12월</td><td class="wk">W10</td><td class="pd">11/30~12/6</td><td class="num">24,604</td><td class="num cum">233,111</td><td class="pct"><span class="pbar"><span style="width:74%"></span></span>74%</td></tr><tr><td class="mon"></td><td class="wk">W11</td><td class="pd">12/7~13</td><td class="num">24,438</td><td class="num cum">257,548</td><td class="pct"><span class="pbar"><span style="width:82%"></span></span>82%</td></tr><tr><td class="mon"></td><td class="wk">W12</td><td class="pd">12/14~20</td><td class="num">24,152</td><td class="num cum">281,700</td><td class="pct"><span class="pbar"><span style="width:90%"></span></span>90%</td></tr><tr><td class="mon"></td><td class="wk">W13</td><td class="pd">12/21~27</td><td class="num">21,274</td><td class="num cum">302,975</td><td class="pct"><span class="pbar"><span style="width:96%"></span></span>96%</td></tr><tr><td class="mon"></td><td class="wk">W14</td><td class="pd">12/28~1/3 <span class="pt">·부분</span></td><td class="num">11,451</td><td class="num cum">314,426</td><td class="pct"><span class="pbar"><span style="width:100%"></span></span>100%</td></tr></tbody>
-      <tfoot><tr><td></td><td></td><td>분기 합계</td><td class="num"><b>314,426</b></td><td class="num">—</td><td>100%</td></tr></tfoot>
+      <thead><tr><th>월</th><th>주차</th><th>기간</th><th class="num">2026 목표</th><th class="num">누적</th><th class="num">2025 실적</th><th class="num">작년比</th></tr></thead>
+      <tbody><tr><td class="mon">10월</td><td class="wk">W1</td><td class="pd">9/28~10/4 <span class="wkflag">추석</span></td><td class="num">15,146</td><td class="num cum">15,146</td><td class="num a25">5,766</td><td class="num up">+163%</td></tr><tr><td class="mon"></td><td class="wk">W2</td><td class="pd">10/5~11 <span class="wkflag">공휴일</span></td><td class="num">24,571</td><td class="num cum">39,717</td><td class="num a25">21,727</td><td class="num up">+13%</td></tr><tr><td class="mon"></td><td class="wk">W3</td><td class="pd">10/12~18</td><td class="num">24,500</td><td class="num cum">64,217</td><td class="num a25">23,858</td><td class="num up">+3%</td></tr><tr><td class="mon"></td><td class="wk">W4</td><td class="pd">10/19~25 <span class="wkflag">피크</span></td><td class="num">25,400</td><td class="num cum">89,617</td><td class="num a25">24,891</td><td class="num up">+2%</td></tr><tr><td class="mon"></td><td class="wk">W5</td><td class="pd">10/26~11/1 <span class="wkflag">이효리</span></td><td class="num">24,200</td><td class="num cum">113,817</td><td class="num a25">25,554</td><td class="num dn">−5%</td></tr><tr><td class="mon">11월</td><td class="wk">W6</td><td class="pd">11/2~8 <span class="wkflag">이효리</span></td><td class="num">24,949</td><td class="num cum">138,766</td><td class="num a25">25,869</td><td class="num dn">−4%</td></tr><tr><td class="mon"></td><td class="wk">W7</td><td class="pd">11/9~15 <span class="wkflag">감쇠</span></td><td class="num">24,100</td><td class="num cum">162,866</td><td class="num a25">23,679</td><td class="num up">+2%</td></tr><tr><td class="mon"></td><td class="wk">W8</td><td class="pd">11/16~22</td><td class="num">24,399</td><td class="num cum">187,265</td><td class="num a25">24,552</td><td class="num dn">−1%</td></tr><tr><td class="mon"></td><td class="wk">W9</td><td class="pd">11/23~29</td><td class="num">24,123</td><td class="num cum">211,388</td><td class="num a25">23,164</td><td class="num up">+4%</td></tr><tr><td class="mon">12월</td><td class="wk">W10</td><td class="pd">11/30~12/6</td><td class="num">23,900</td><td class="num cum">235,288</td><td class="num a25">22,264</td><td class="num up">+7%</td></tr><tr><td class="mon"></td><td class="wk">W11</td><td class="pd">12/7~13</td><td class="num">23,300</td><td class="num cum">258,588</td><td class="num a25">22,222</td><td class="num up">+5%</td></tr><tr><td class="mon"></td><td class="wk">W12</td><td class="pd">12/14~20</td><td class="num">23,113</td><td class="num cum">281,701</td><td class="num a25">21,223</td><td class="num up">+9%</td></tr><tr><td class="mon"></td><td class="wk">W13</td><td class="pd">12/21~27 <span class="wkflag">성탄</span></td><td class="num">21,274</td><td class="num cum">302,975</td><td class="num a25">19,382</td><td class="num up">+10%</td></tr><tr><td class="mon"></td><td class="wk">W14</td><td class="pd">12/28~1/3 <span class="wkflag">부분</span></td><td class="num">11,451</td><td class="num cum">314,426</td><td class="num a25">8,242</td><td class="num up">+39%</td></tr></tbody>
+      <tfoot><tr><td></td><td></td><td>분기 합계</td><td class="num"><b>314,426</b></td><td class="num">314,426</td><td class="num">295,071</td><td class="num up">+6.6%</td></tr></tfoot>
     </table>
-    <div class="curvecap"><b>주마다 약 2.4만 건.</b> W1·W14는 4일짜리 부분 주간(연휴·연말). 10월에 들어온 새 손님이 11·12월 2·3회차로 이어지며 뒤로 갈수록 힘이 붙습니다.</div>
+    <div class="curvecap"><b>2024년(이효리 없는 해) 트렌드로 2곳 보정.</b> ① 10월은 원래 <b>W4로 상승·피크</b>(2024 W4가 연중 피크) — W3·W4를 올려 자연 상승세 반영. ② 12월은 11월 말보다 <b>낮아지는 게 정상</b>(2024·2025 모두 하락) — W10을 W9 아래로 낮춰 하락세 반영. 나머지는 목표시트 원안. W5·W6(이효리)·W1·W14(부분주)는 작년 기저가 특이해 비교는 참고만. <b>※ 주차는 월~일 기준이라 W5·W10이 월 경계를 걸칩니다 — 주를 월로 묶으면 월 목표값(105/107/103k)과 다르며, 분기 총합(314,426)만 일치합니다.</b></div>
   </div>
 
   <!-- ── ONE-PAGE MAP ── -->
@@ -237,7 +245,7 @@
       <div class="stage">
         <div class="fbox f-free">
           <div class="fstep">자유 · 새 손님</div><div class="fname">첫 주문</div>
-          <div class="fpct">자유의 <b>13.4%</b> · 전체 7.2%</div><div class="fgoal">Q4 목표 42,330건</div>
+          <div class="fpct">자유의 <b>13.4%</b> · 전체 7.2%</div><div class="fgoal">Q4 목표 37,350건 <span class="yy">작년比 +14.6%</span></div>
         </div>
         <div class="sbox">
           <div class="goalq">처음 오는 손님을 늘린다</div>
@@ -247,7 +255,7 @@
       <div class="stage">
         <div class="fbox f-free2">
           <div class="fstep">자유 · 다시 오게</div><div class="fname">온보딩 (2·3회차)</div>
-          <div class="fpct">자유의 <b>14.5%</b> · 전체 7.8%</div><div class="fgoal">Q4 목표 27,040건</div>
+          <div class="fpct">자유의 <b>14.5%</b> · 전체 7.8%</div><div class="fgoal">Q4 목표 27,024건 <span class="yy">작년比 +10.0%</span></div>
         </div>
         <div class="sbox">
           <div class="goalq">첫 손님을 단골 직전까지</div>
@@ -297,7 +305,7 @@
       <div class="stage no-arrow">
         <div class="fbox f-pass">
           <div class="fstep">전환 상품 · 신규</div><div class="fname">런드리고패스</div>
-          <div class="fpct">Q4 목표 <b>5,000명</b> 가입 (9/30 런칭)</div>
+          <div class="fpct">일 ~100명 가입 → Q4 누적 <b>10,000명</b> · 가입자 월 <b>1.4회</b> 주문 (9/30 런칭)</div>
         </div>
         <div class="sbox">
           <div class="goalq">자유 활성·온보딩 → 패스로 전환</div>
@@ -305,7 +313,7 @@
           <details class="detail"><summary>상세 — 라우팅 (패스)</summary>
           <div class="dpanel"><div class="minigate">
             <div class="gq">최근 활성 &amp; <b>월 총지출 &lt; 4만원</b> (소량·반복)</div>
-            <div class="grow">→ <b class="pass">런드리고패스</b> <span class="gsz">배송비 허들 제거 · 월 0.76회+면 이득</span></div>
+            <div class="grow">→ <b class="pass">런드리고패스</b> <span class="gsz">배송비 허들 제거 · 손익분기 월 0.76회 vs 실측 1.4회 → 가입자당 이득</span></div>
           </div></div></details>
         </div>
       </div>
@@ -336,21 +344,24 @@
   <div class="bridge">
     <div class="btitle">주문 브릿지 — 월별 목표 쪼개기 <span>(Best 314,426 기준)</span></div>
     <table class="brtbl">
-      <thead><tr><th>세그먼트</th><th class="num">10월</th><th class="num">11월</th><th class="num">12월</th><th class="num">Q4 합계</th><th class="num">비중</th></tr></thead>
+      <thead><tr><th>세그먼트</th><th class="num">10월</th><th class="num">11월</th><th class="num">12월</th><th class="num">Q4 합계</th><th class="num">작년比</th></tr></thead>
       <tbody>
-        <tr><td><span class="segdot" style="background:#5a9bd8"></span>첫주문</td><td class="num">13,430</td><td class="num">17,340</td><td class="num">11,560</td><td class="num"><b>42,330</b></td><td class="num">13.5%</td></tr>
-        <tr><td><span class="segdot" style="background:#2f7cc4"></span>온보딩(2·3회차)</td><td class="num">9,035</td><td class="num">9,176</td><td class="num">8,829</td><td class="num"><b>27,040</b></td><td class="num">8.6%</td></tr>
-        <tr><td><span class="segdot" style="background:#0f4c8a"></span>자유 활성(4회+)</td><td class="num">38,137</td><td class="num">34,449</td><td class="num">26,937</td><td class="num"><b>99,523</b></td><td class="num">31.7%</td></tr>
-        <tr><td><span class="segdot" style="background:#607a94"></span>런드리고패스</td><td class="num">1,500</td><td class="num">3,500</td><td class="num">5,000</td><td class="num"><b>10,000</b></td><td class="num">3.2%</td></tr>
-        <tr><td><span class="segdot" style="background:#c99a2e"></span>구독</td><td class="num">42,958</td><td class="num">42,235</td><td class="num">50,340</td><td class="num"><b>135,533</b></td><td class="num">43.1%</td></tr>
+        <tr><td><span class="segdot" style="background:#5a9bd8"></span>첫주문 <span style="color:var(--ink-48);font-size:10px">(신규 자유)</span></td><td class="num">10,350</td><td class="num">13,350</td><td class="num">8,900</td><td class="num"><b>32,600</b></td><td class="num"><span style="color:var(--ink-48)">±0% 유지</span></td></tr>
+        <tr><td><span class="segdot" style="background:#2f7cc4"></span>온보딩(2·3회차)</td><td class="num">8,220</td><td class="num">8,350</td><td class="num">8,030</td><td class="num"><b>24,600</b></td><td class="num"><span style="color:var(--ink-48)">±0% 유지</span></td></tr>
+        <tr><td><span class="segdot" style="background:#0f4c8a"></span>자유 (휴면 재활성 포함)</td><td class="num">42,432</td><td class="num">39,165</td><td class="num">29,196</td><td class="num"><b>110,793</b></td><td class="num"><span style="color:#1d9e75;font-weight:700">+3.4%</span></td></tr>
+        <tr><td><span class="segdot" style="background:#607a94"></span>런드리고패스(순증) <span style="color:#1d9e75;font-weight:700;font-size:10px">↑2배</span></td><td class="num">1,100</td><td class="num">3,600</td><td class="num">6,200</td><td class="num"><b>10,900</b></td><td class="num"><span style="color:var(--ink-48)">신규</span></td></tr>
+        <tr><td><span class="segdot" style="background:#c99a2e"></span>구독 <span style="color:#c99a2e;font-weight:700;font-size:10px">↑유지=상승</span></td><td class="num">42,958</td><td class="num">42,235</td><td class="num">50,340</td><td class="num"><b>135,533</b></td><td class="num"><span style="color:var(--ink-48)">±0%</span></td></tr>
       </tbody>
       <tfoot>
-        <tr><td>Q4 목표 합계</td><td class="num">105,060</td><td class="num">106,700</td><td class="num">102,666</td><td class="num"><b>314,426</b></td><td class="num">100%</td></tr>
+        <tr><td>Q4 목표 합계</td><td class="num">105,060</td><td class="num">106,700</td><td class="num">102,666</td><td class="num"><b>314,426</b></td><td class="num"><span style="color:#1d9e75;font-weight:700">+6.6%</span></td></tr>
         <tr class="pctrow"><td>2025 실적</td><td class="num">95,509</td><td class="num">106,229</td><td class="num">93,333</td><td class="num">295,071</td><td class="num">—</td></tr>
-        <tr class="riserow"><td>상승률</td><td class="num up">+10.0%</td><td class="num up">+0.4%<sup>*</sup></td><td class="num up">+10.0%</td><td class="num up">+6.6%</td><td class="num">—</td></tr>
+        <tr class="riserow"><td>월별 작년比</td><td class="num up">+10.0%</td><td class="num up">+0.4%</td><td class="num up">+10.0%</td><td class="num up">+6.6%</td><td class="num"></td></tr>
       </tfoot>
     </table>
-    <div class="brnote">· <b>첫주문</b> 기존 대비 +70% · <b>온보딩(2·3)</b> 개선목표(5.0·3.6%) · <b>자유 활성</b> = 작년 수준 유지(휴면 깨우기 포함) · <b>런드리고패스</b> = 누적 가입자 각 1회+ 수거(10/11/12 누적 1,500/3,500/5,000) · <b>구독</b> = 작년 수준 유지(플랫).<br>· <b>휴면 깨우기(최대 레버)는 별도 행이 아니라 자유 활성 목표 안에 포함</b> — 깨운 유저는 자유 활성으로 주문. <b>[자유 활성 + 패스]는 작년 대비 +2.2%</b>로 반복 풀이 성장. (<sup>*</sup>11월 +0.4%는 2025년 11월에 이효리 효과로 실적이 106,229까지 튄 이상치 때문 — 그 외 월은 +10%)</div>
+    <div class="ctxbox">
+      <div class="ctxrow"><span class="ctxk" style="color:#c0392b">이효리 효과</span> <b>첫주문(신규 자유)</b> 2024 Q4 <b>18,465</b> → 2025 Q4 <b>32,581</b> = <b style="color:#c0392b">+14,116건 (+76%)</b>. 작년 첫주문의 상당분이 이효리 일회성 효과 — 올해는 이효리 없이 <b>첫세탁 0원</b>으로 이 수준 <b>유지</b>가 목표(실질적으로 공격적).</div>
+      <div class="ctxrow"><span class="ctxk" style="color:#9a6a11">구독 유지 = 상승</span> <b>현재 구독자수가 작년보다 적은 상태</b>. 2026 "유지(±0%)"는 줄어든 구독자로 작년 주문량을 지켜야 하므로, 단순 유지가 아니라 재획득·빈도 방어가 필요한 <b>상승 목표</b>.</div>
+    </div>
   </div>
 
   <div class="foot">

@@ -68,6 +68,8 @@
   .fbox .fstep{font-size:11.5px; font-weight:700; opacity:.85; letter-spacing:.02em;}
   .fbox .fname{font-family:"SF Pro Display",system-ui,sans-serif; font-size:19px; font-weight:700; letter-spacing:-.01em; margin:2px 0 2px;}
   .fbox .fpct{font-size:12.5px; opacity:.9;}
+  .fbox .vgoal{margin-top:5px; padding-top:5px; border-top:1px solid rgba(255,255,255,.22); font-size:11.5px; color:rgba(255,255,255,.96); line-height:1.45;}
+  .fbox .vgoal .vo{opacity:.8;}
   .fbox .fpct .real{color:#bff0dc;} .fbox .fpct .dum{color:#ffcdb8;}
   .fbox.f1{background:#0f4c8a;} .fbox.f2{background:#1668b8;} .fbox.f3{background:#2f86d6;} .fbox.f4{background:#2a2a2c;}
   /* connector arrow between stages */
@@ -245,7 +247,8 @@
       <div class="stage">
         <div class="fbox f-free">
           <div class="fstep">자유 · 새 손님</div><div class="fname">첫 주문</div>
-          <div class="fpct">자유의 <b>13.4%</b> · 전체 7.2%</div>
+          <div class="fpct">현황 자유의 <b>13.4%</b> · 전체 7.2%</div>
+          <div class="vgoal">→ <b>Q4 목표</b> 전체 <b>8.7%</b> · <b>27,500건</b> <span class="vo">(작년比 −15.6%)</span></div>
         </div>
         <div class="sbox">
           <div class="goalq">처음 오는 손님을 늘린다</div>
@@ -255,7 +258,8 @@
       <div class="stage">
         <div class="fbox f-free2">
           <div class="fstep">자유 · 다시 오게</div><div class="fname">온보딩 (2·3회차)</div>
-          <div class="fpct">자유의 <b>14.5%</b> · 전체 7.8%</div>
+          <div class="fpct">현황 자유의 <b>14.5%</b> · 전체 7.8%</div>
+          <div class="vgoal">→ <b>Q4 목표</b> 전체 <b>7.8%</b> · <b>24,600건</b> <span class="vo">(±0%)</span></div>
         </div>
         <div class="sbox">
           <div class="goalq">첫 손님을 단골 직전까지</div>
@@ -284,7 +288,8 @@
       <div class="stage no-arrow">
         <div class="fbox f-free3">
           <div class="fstep">자유 · 반복 이용</div><div class="fname">활성 (4회+)</div>
-          <div class="fpct">자유의 <b>72.3%</b> · 전체 38.9%</div>
+          <div class="fpct">현황 자유의 <b>72.3%</b> · 전체 38.9%</div>
+          <div class="vgoal">→ <b>Q4 목표</b> 활성+휴면 합산 전체 <b>36.1%</b> · <b>113,566건</b> <span class="vo">(+6.0%)</span></div>
         </div>
         <div class="sbox">
           <div class="goalq">더 자주 맡기게 → 패스·구독으로 승격</div>
@@ -295,6 +300,7 @@
         <div class="fbox f-dorm">
           <div class="fstep">★ 최대 볼륨</div><div class="fname">휴면</div>
           <div class="fpct">유저 <b>16.8만 명</b> (자유의 71% · <b>최근 90일 무주문</b>) · 주문 ≈ 0</div>
+          <div class="vgoal">→ <b>Q4 목표</b> 재활성분은 위 <b>자유(활성) 라인에 합산</b> · 단기 최대 레버</div>
         </div>
         <div class="sbox">
           <div class="goalq">깨워서 다시 주문하게 — 가장 큰 성장 레버</div>
@@ -306,6 +312,7 @@
         <div class="fbox f-pass">
           <div class="fstep">전환 상품 · 신규</div><div class="fname">런드리고패스</div>
           <div class="fpct">일 ~100명 가입 → Q4 누적 <b>10,000명</b> · 가입자 월 <b>1.4회</b> 주문 (9/30 런칭)</div>
+          <div class="vgoal">→ <b>Q4 목표</b> 순증 전체 <b>4.2%</b> · <b>13,227건</b></div>
         </div>
         <div class="sbox">
           <div class="goalq">자유 활성·온보딩 → 패스로 전환</div>
@@ -320,7 +327,8 @@
       <div class="stage">
         <div class="fbox f-sub">
           <div class="fstep">고볼륨</div><div class="fname">구독</div>
-          <div class="fpct">주문의 <b>46.2%</b></div>
+          <div class="fpct">현황 주문의 <b>46.2%</b></div>
+          <div class="vgoal">→ <b>Q4 목표</b> 전체 <b>43.1%</b> · <b>135,533건</b> <span class="vo">(±0%, 유지=상승)</span></div>
         </div>
         <div class="sbox">
           <div class="goalq">자유 고볼륨 → 구독 전환 + 오래 붙잡기</div>
@@ -346,10 +354,10 @@
     <table class="brtbl">
       <thead><tr><th>세그먼트</th><th class="num">비중</th><th class="num">10월</th><th class="num">11월</th><th class="num">12월</th><th class="num">Q4 합계</th><th class="num">작년比</th></tr></thead>
       <tbody>
-        <tr><td><span class="segdot" style="background:#5a9bd8"></span>첫주문 <span style="color:var(--ink-48);font-size:10px">(신규 자유)</span></td><td class="num" style="color:var(--ink-80);font-weight:600">10.4%</td><td class="num">10,350</td><td class="num">13,350</td><td class="num">8,900</td><td class="num"><b>32,600</b></td><td class="num"><span style="color:var(--ink-48)">±0% 유지</span></td></tr>
+        <tr><td><span class="segdot" style="background:#5a9bd8"></span>첫주문 <span style="color:var(--ink-48);font-size:10px">(신규 자유)</span></td><td class="num" style="color:var(--ink-80);font-weight:600">8.7%</td><td class="num">8,440</td><td class="num">9,725</td><td class="num">9,335</td><td class="num"><b>27,500</b></td><td class="num"><span style="color:#d85a30;font-weight:700">−15.6%</span></td></tr>
         <tr><td><span class="segdot" style="background:#2f7cc4"></span>온보딩(2·3회차)</td><td class="num" style="color:var(--ink-80);font-weight:600">7.8%</td><td class="num">8,220</td><td class="num">8,350</td><td class="num">8,030</td><td class="num"><b>24,600</b></td><td class="num"><span style="color:var(--ink-48)">±0% 유지</span></td></tr>
-        <tr><td><span class="segdot" style="background:#0f4c8a"></span>자유 (휴면 재활성 포함)</td><td class="num" style="color:var(--ink-80);font-weight:600">35.2%</td><td class="num">42,432</td><td class="num">39,165</td><td class="num">29,196</td><td class="num"><b>110,793</b></td><td class="num"><span style="color:#1d9e75;font-weight:700">+3.4%</span></td></tr>
-        <tr><td><span class="segdot" style="background:#607a94"></span>런드리고패스(순증) <span style="color:#1d9e75;font-weight:700;font-size:10px">↑2배</span></td><td class="num" style="color:var(--ink-80);font-weight:600">3.5%</td><td class="num">1,100</td><td class="num">3,600</td><td class="num">6,200</td><td class="num"><b>10,900</b></td><td class="num"><span style="color:var(--ink-48)">신규</span></td></tr>
+        <tr><td><span class="segdot" style="background:#0f4c8a"></span>자유 (휴면 재활성 포함)</td><td class="num" style="color:var(--ink-80);font-weight:600">36.1%</td><td class="num">44,109</td><td class="num">42,022</td><td class="num">27,435</td><td class="num"><b>113,566</b></td><td class="num"><span style="color:#1d9e75;font-weight:700">+6.0%</span></td></tr>
+        <tr><td><span class="segdot" style="background:#607a94"></span>런드리고패스(순증) <span style="color:#1d9e75;font-weight:700;font-size:10px">↑2.5배</span></td><td class="num" style="color:var(--ink-80);font-weight:600">4.2%</td><td class="num">1,333</td><td class="num">4,368</td><td class="num">7,526</td><td class="num"><b>13,227</b></td><td class="num"><span style="color:var(--ink-48)">신규</span></td></tr>
         <tr><td><span class="segdot" style="background:#c99a2e"></span>구독 <span style="color:#c99a2e;font-weight:700;font-size:10px">↑유지=상승</span></td><td class="num" style="color:var(--ink-80);font-weight:600">43.1%</td><td class="num">42,958</td><td class="num">42,235</td><td class="num">50,340</td><td class="num"><b>135,533</b></td><td class="num"><span style="color:var(--ink-48)">±0%</span></td></tr>
       </tbody>
       <tfoot>
@@ -359,7 +367,7 @@
       </tfoot>
     </table>
     <div class="ctxbox">
-      <div class="ctxrow"><span class="ctxk" style="color:#c0392b">이효리 효과</span> <b>첫주문(신규 자유)</b> 2024 Q4 <b>18,465</b> → 2025 Q4 <b>32,581</b> = <b style="color:#c0392b">+14,116건 (+76%)</b>. 작년 첫주문의 상당분이 이효리 일회성 효과 — 올해는 이효리 없이 <b>첫세탁 0원</b>으로 이 수준 <b>유지</b>가 목표(실질적으로 공격적).</div>
+      <div class="ctxrow"><span class="ctxk" style="color:#c0392b">이효리 효과 · 첫주문 현실화</span> <b>첫주문(신규 자유)</b> 2024 Q4 <b>18,465</b> → 2025 Q4 <b>32,581</b> = <b style="color:#c0392b">+76%</b>, 작년 급증분 상당수가 <b>이효리 일회성 효과</b>. 올해는 이효리 없이 첫세탁 0원만으로 작년치 유지는 과도 → 목표를 <b>27,500건(작년比 −15.6%)</b>으로 현실화. 단, <b>이효리 없던 2024 대비로는 +49%</b>로 여전히 공격적 성장. 월 배분도 작년 <b>11월 쏠림(이효리 +104%)</b> 대신 <b>2024 자연 패턴(31·35·34%)</b>으로 조정 — 12월은 이불 성수기라 높은 게 정상.</div>
       <div class="ctxrow"><span class="ctxk" style="color:#9a6a11">구독 유지 = 상승</span> <b>현재 구독자수가 작년보다 적은 상태</b>. 2026 "유지(±0%)"는 줄어든 구독자로 작년 주문량을 지켜야 하므로, 단순 유지가 아니라 재획득·빈도 방어가 필요한 <b>상승 목표</b>.</div>
     </div>
   </div>
